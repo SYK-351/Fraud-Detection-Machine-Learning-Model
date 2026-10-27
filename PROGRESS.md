@@ -46,3 +46,9 @@
 - Result: no holdout metrics; test set remains unevaluated.
 - Checks: source compiles; final evaluator requires full results/cv_summary.csv and full fold outputs.
 - Decisions/deviations: Preserve the one-touch holdout rule; do not run this stage using FAST results.
+
+### 2026-10-27 S5 implementation ready; ablation pending
+- What: Added legacy-like versus corrected protocol runner and F12 output. Files: scripts/run_ablation.py.
+- Result: no ablation metrics yet.
+- Checks: source compiles; runner uses only the development partitions.
+- Decisions/deviations: The primary chronological holdout is excluded to preserve its single evaluation. A0 reproduces the legacy operations only within development data.
