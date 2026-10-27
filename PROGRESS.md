@@ -52,3 +52,9 @@
 - Result: no ablation metrics yet.
 - Checks: source compiles; runner uses only the development partitions.
 - Decisions/deviations: The primary chronological holdout is excluded to preserve its single evaluation. A0 reproduces the legacy operations only within development data.
+
+### 2026-10-27 S6-S7 analysis runners ready; results pending
+- What: Added validation explainability/error profiles, train OOF calibration, illustrative review-cost sensitivity, and bounded tuning runners. Files: scripts/run_extensions.py, scripts/run_tuning.py.
+- Result: no Tier 2 metrics yet; these runners require completed CV and final model selection.
+- Checks: source compiles; explainability gracefully records a permutation-importance fallback when SHAP is unavailable.
+- Decisions/deviations: Cost curve is illustrative and uses validation predictions; no actual review cost was supplied.
