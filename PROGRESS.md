@@ -28,3 +28,9 @@
 - Result: 283,726 rows and 473 frauds; chronological partitions contain 342, 57, and 74 frauds.
 - Checks: Seven tests pass; audit confirms each partition exceeds the minimum positive count.
 - Decisions/deviations: Legacy split is kept isolated; primary chronological holdout remains unevaluated.
+
+### 2026-10-27 S2 DONE
+- What: Generated imbalance, hourly, amount ECDF, feature-screen, density, and protocol figures; added corrected train-only screens. Files: scripts/run_eda.py, figures/f01-f06, results/eda_feature_ranking.csv, results/eda_findings.md.
+- Result: Train-only sample has 170,235 rows and 342 frauds; top absolute marginal effect features are V14, V12, V4, and V3.
+- Checks: EDA script completed; outputs are PNG and PDF at 300 dpi.
+- Decisions/deviations: F1 is labeled descriptive on deduplicated data; inferential feature statistics use train only.

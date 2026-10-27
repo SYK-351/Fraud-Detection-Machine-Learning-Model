@@ -13,9 +13,9 @@ Decisions: default template IEEEtran journal, two-column | author: S.Yaswanth Kr
 - [x] S1.3 Split tests
 - [x] S1.4 Data audit
 ## S2 EDA [Tier 1 | ~60k]
-- [ ] S2.1 Figures F1-F5
-- [ ] S2.2 Feature statistics and rankings
-- [ ] S2.3 Statistical-method rationale
+- [x] S2.1 Figures F1-F5
+- [x] S2.2 Feature statistics and rankings
+- [x] S2.3 Statistical-method rationale
 ## S3 Pipelines and CV [Tier 1 | ~60k]
 - [ ] S3.1 Hypotheses before model runs
 - [ ] S3.2 Model factory and config snapshot
