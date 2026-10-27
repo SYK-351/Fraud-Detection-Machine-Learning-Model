@@ -1,0 +1,3 @@
+group,count,amount_median,hour_median
+false_negative,18,23.735,12.0
+true_positive,39,45.51,13.0
