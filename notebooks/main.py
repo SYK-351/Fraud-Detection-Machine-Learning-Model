@@ -109,6 +109,32 @@ else:
 # %% [markdown]
 # ## Goal
 #
+# Measure how protocol choices change the development-set results.
+#
+# ## Concept
+#
+# A random split, globally fitted scaling, and test-selected thresholds can each change reported performance. The ablation compares these steps on development data only and reserves the chronological holdout for the single final evaluation. The difference between stages is measured; it is not attributed to leakage without evidence.
+
+# %%
+ablation_path = RESULTS / "ablation.csv"
+if ablation_path.exists():
+    ablation = pd.read_csv(ablation_path)
+    display(ablation.groupby(["model", "stage"])[["f1", "recall", "pr_auc"]].agg(["mean", "std"]).round(3))
+fig = FIGURES / "f12_protocol_ablation.png"
+if fig.exists(): display(Image(filename=str(fig)))
+
+# %% [markdown]
+# ## What we see
+#
+# The table and F12 summarize three random seeds for both tree models. A0 uses a development evaluation partition and does not access the primary chronological holdout.
+#
+# ## Decision
+#
+# Use the measured spread across seeds and protocols; do not generalize the random-split result to future transactions.
+
+# %% [markdown]
+# ## Goal
+#
 # Keep threshold choice separate from final evaluation.
 #
 # ## Concept
@@ -150,6 +176,12 @@ for image_name in ["f08_test_pr_curves.png", "f09_confusion_matrices.png", "f10_
 for image_name in ["f11_reliability.png", "f13_cost_sensitivity.png", "f14_explainability_errors.png"]:
     image_path = FIGURES / image_name
     if image_path.exists(): display(Image(filename=str(image_path)))
+
+# %%
+tuning_path = RESULTS / "tuning_results.json"
+if tuning_path.exists():
+    tuning = json.loads(tuning_path.read_text(encoding="utf-8"))
+    display(pd.DataFrame([{k: item[k] for k in ("model", "strategy", "best_cv_pr_auc", "validation_pr_auc", "validation_roc_auc", "best_params")} for item in tuning]))
 
 # %% [markdown]
 # ## Mistakes in v1 and how v2 fixes them
