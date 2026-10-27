@@ -58,3 +58,9 @@
 - Result: no Tier 2 metrics yet; these runners require completed CV and final model selection.
 - Checks: source compiles; explainability gracefully records a permutation-importance fallback when SHAP is unavailable.
 - Decisions/deviations: Cost curve is illustrative and uses validation predictions; no actual review cost was supplied.
+
+### 2026-10-27 S8 DONE
+- What: Created Jupytext source and explanatory notebook with cached-result sections. Files: notebooks/main.py, main.ipynb.
+- Result: notebook outputs read generated audit and EDA files; final metrics remain pending.
+- Checks: Jupytext conversion and `python -m nbconvert --execute --to notebook --inplace main.ipynb` succeeded.
+- Decisions/deviations: Heavy fitting stays in scripts; notebook uses RUN_HEAVY=False.
