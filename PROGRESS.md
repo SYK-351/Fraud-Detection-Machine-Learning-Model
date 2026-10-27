@@ -1,7 +1,7 @@
 # PROGRESS
 ## Status (edit in place)
-- Current: S10 | Next action: final QA, explicit-path stage commits, and final status; TEST_EVALUATED: yes (one evaluation)
-- Tokens used (user-reported at last gate): n/a (local Luna; no Radox gateway) | Last commit: 1548ce4 docs: document reproduction and project limitations
+- Current: Complete (S0.4 deferred; extraction limitation documented) | TEST_EVALUATED: yes (one evaluation)
+- Tokens used (user-reported at last gate): n/a (local Luna; no Radox gateway) | Last commit: b5df9e3 docs: complete results report and assets
 ## Log (append only, newest last)
 ### 2026-10-27 S0 setup in progress
 - What: Read project brief and report digest; requested and received S0.1 decisions. Files: PROJECT_BRIEF.md, REPORT_DIGEST.md.
@@ -124,3 +124,9 @@
 - Result: The report now includes cross-validation, the single holdout, ablation, explainability, calibration, cost sensitivity, and tuning results.
 - Checks: `scripts/check_tex.py` passed; the desktop LaTeX compiler compiled the saved source successfully.
 - Decisions/deviations: The old report bibliography could not be recovered from the supplied digest; this limitation and the handling of its two visible placeholders are documented in `docs/CITATION_AUDIT.md`.
+
+### 2026-10-27 S10 DONE
+- What: Refreshed the results-driven README and completed final QA. Files: README.md, PLAN.md, PROGRESS.md.
+- Result: Full CV, one holdout evaluation, ablation, extensions, and tuning outputs are documented; no data or model binaries over 5 MB were staged.
+- Checks: Seven tests passed; notebook execution, LaTeX source checks, built-in LaTeX compilation, and `git diff --check` passed.
+- Decisions/deviations: Nothing was pushed. S0.4 remains deferred because PDF extraction tools were unavailable; the supplied digest limitation is recorded in the citation audit.

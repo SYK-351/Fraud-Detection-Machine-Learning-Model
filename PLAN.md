@@ -39,4 +39,4 @@ Decisions: default template IEEEtran journal, two-column | author: S.Yaswanth Kr
 - [x] S9.1 Citation audit (old bibliography unavailable in supplied digest; limitation recorded)
 - [x] S9.2-S9.3 Self-contained IEEEtran report and asset export
 ## S10 README and QA [Tier 1 | ~25k]
-- [ ] S10.1-S10.3 README, QA, final status
+- [x] S10.1-S10.3 README, QA, final status
