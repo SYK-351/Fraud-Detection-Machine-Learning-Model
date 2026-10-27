@@ -22,3 +22,9 @@
 - Result: n/a
 - Checks: Python 3.11 venv created; user hash error did not reproduce against the plain requirements manifest.
 - Decisions/deviations: PDF text extraction unavailable; complete dependency install stalled while downloading CatBoost. Core packages installed; full-model environment remains incomplete.
+
+### 2026-10-27 S1 DONE
+- What: Added schema validation, deduplication, deterministic features, chronological and legacy splits. Files: src/fraud/config.py, data.py, features.py, scripts/audit_data.py.
+- Result: 283,726 rows and 473 frauds; chronological partitions contain 342, 57, and 74 frauds.
+- Checks: Seven tests pass; audit confirms each partition exceeds the minimum positive count.
+- Decisions/deviations: Legacy split is kept isolated; primary chronological holdout remains unevaluated.

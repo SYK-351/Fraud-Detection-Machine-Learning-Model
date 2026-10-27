@@ -1,0 +1,29 @@
+{
+  "rows_after_deduplication": 283726,
+  "frauds_after_deduplication": 473,
+  "time_span_hours": 47.99777777777778,
+  "splits": {
+    "train": {
+      "rows": 170235,
+      "frauds": 342,
+      "legitimate": 169893,
+      "time_min_seconds": 0.0,
+      "time_max_seconds": 120392.0
+    },
+    "validation": {
+      "rows": 56745,
+      "frauds": 57,
+      "legitimate": 56688,
+      "time_min_seconds": 120393.0,
+      "time_max_seconds": 145233.0
+    },
+    "test": {
+      "rows": 56746,
+      "frauds": 74,
+      "legitimate": 56672,
+      "time_min_seconds": 145234.0,
+      "time_max_seconds": 172792.0
+    }
+  },
+  "rows_before_deduplication": 284807
+}

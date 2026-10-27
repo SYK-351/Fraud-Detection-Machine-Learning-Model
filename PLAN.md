@@ -8,10 +8,10 @@ Decisions: default template IEEEtran journal, two-column | author: S.Yaswanth Kr
 - [x] S0.5 Project scaffold and planning files
 - [ ] S0.6 Verify venv and dependencies
 ## S1 Data layer [Tier 1 | ~30k]
-- [ ] S1.1 Load, schema, dedupe, features
-- [ ] S1.2 Chronological and legacy splits
-- [ ] S1.3 Split tests
-- [ ] S1.4 Data audit
+- [x] S1.1 Load, schema, dedupe, features
+- [x] S1.2 Chronological and legacy splits
+- [x] S1.3 Split tests
+- [x] S1.4 Data audit
 ## S2 EDA [Tier 1 | ~60k]
 - [ ] S2.1 Figures F1-F5
 - [ ] S2.2 Feature statistics and rankings
