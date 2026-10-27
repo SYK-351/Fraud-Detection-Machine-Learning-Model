@@ -26,8 +26,12 @@ def main():
     candidates=cv[cv["mean"] >= top_mean-one_se].copy()
     # Within one standard error, favor the faster measured pipeline.
     cv_folds=pd.read_csv(result/"cv_results.csv")
-    speed=cv_folds.groupby(["model","strategy"],as_index=False).fit_seconds.mean().rename(columns={"fit_seconds":"mean_fit_seconds"})
-    candidates=candidates.merge(speed,on=["model","strategy"],how="left").sort_values(["mean_fit_seconds","mean"],ascending=[True,False])
+    # cv_summary.csv already carries mean_fit_seconds in current runs. Derive it
+    # from fold rows only for older summaries that predate that column.
+    if "mean_fit_seconds" not in candidates.columns:
+        speed=cv_folds.groupby(["model","strategy"],as_index=False).fit_seconds.mean().rename(columns={"fit_seconds":"mean_fit_seconds"})
+        candidates=candidates.merge(speed,on=["model","strategy"],how="left")
+    candidates=candidates.sort_values(["mean_fit_seconds","mean"],ascending=[True,False])
     preferred=candidates.iloc[0]
     remainder=cv[~((cv.model==preferred.model)&(cv.strategy==preferred.strategy))].sort_values("mean",ascending=False)
     cv=pd.concat([candidates.iloc[[0]],remainder]).head(3)
@@ -37,6 +41,7 @@ def main():
     # Test labels and features are first accessed below, after all model and threshold choices are fixed.
     selected=[]
     for row in cv.itertuples(index=False):
+        print(f"Fitting validation model {row.model}/{row.strategy} on {len(ytr):,} development rows...",flush=True)
         if row.model=="dummy":
             model=DummyClassifier(strategy="prior").fit(Xtr,ytr)
         else:
@@ -45,8 +50,10 @@ def main():
                 model.set_params(model__scale_pos_weight=(len(ytr)-int(ytr.sum()))/int(ytr.sum()))
             model.fit(Xtr,ytr)
         pv=model.predict_proba(Xv)[:,1]; threshold, strict=best_threshold(yv,pv)
+        print(f"Validation selection complete for {row.model}/{row.strategy} (F1 threshold {threshold:.6g}).",flush=True)
         selected.append((row.model,row.strategy,model,threshold,strict,pv))
     Xtest=splits.test[FEATURE_COLUMNS].to_numpy(); ytest=splits.test.Class.to_numpy()
+    print(f"Evaluating the locked selection once on {len(ytest):,} holdout rows...",flush=True)
     output={"test_rows":int(len(ytest)),"test_frauds":int(ytest.sum()),"test_evaluation_count":1,"models":[]}
     probability_data={"y_test":ytest}
     for name,strategy,model,threshold,strict,pv in selected:
