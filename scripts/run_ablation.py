@@ -46,34 +46,50 @@ def main():
     frame=load_transactions(DATA_PATH)
     primary=chronological_split(frame)
     dev=pd.concat([primary.train,primary.validation]).sort_values("Time")
-    X=dev[FEATURE_COLUMNS].to_numpy(); y=dev.Class.to_numpy(); rows=[]
+    X=dev[FEATURE_COLUMNS].to_numpy(); y=dev.Class.to_numpy()
+    out=Path("results/ablation.csv"); out.parent.mkdir(exist_ok=True,parents=True)
+    rows=pd.read_csv(out).to_dict("records") if out.exists() else []
+    completed={(int(r["seed"]),r["model"],r["stage"]) for r in rows}
+    def save(): pd.DataFrame(rows).to_csv(out,index=False)
     for seed in (42,123,2026):
         # A0: legacy-like random split, globally fit scaler, SMOTE, then tune on its evaluation partition.
         tr,hold=train_test_split(np.arange(len(y)),test_size=.2,random_state=seed,stratify=y)
-        scaler=StandardScaler().fit(X); Xscaled=scaler.transform(X)
-        sampler=SMOTE(random_state=seed); Xr,yr=sampler.fit_resample(Xscaled[tr],y[tr])
         for name in ("rf","xgb"):
-            legacy=make_estimator(name,seed).fit(Xr,yr); p=legacy.predict_proba(Xscaled[hold])[:,1]
-            threshold,_=best_threshold(y[hold],p); record(rows,seed,name,"A0_legacy_like",y[hold],p,threshold)
-            corrected=pipeline(name,seed).fit(X[tr],y[tr]); p1=corrected.predict_proba(X[hold])[:,1]
-            record(rows,seed,name,"A1_fold_local_scale",y[hold],p1,.5)
+            if (seed,name,"A0_legacy_like") not in completed:
+                print(f"Seed {seed} {name}: fitting A0 legacy-like baseline (may take several minutes)...",flush=True)
+                scaler=StandardScaler().fit(X); Xscaled=scaler.transform(X)
+                sampler=SMOTE(random_state=seed); Xr,yr=sampler.fit_resample(Xscaled[tr],y[tr])
+                legacy=make_estimator(name,seed).fit(Xr,yr); p=legacy.predict_proba(Xscaled[hold])[:,1]
+                threshold,_=best_threshold(y[hold],p); record(rows,seed,name,"A0_legacy_like",y[hold],p,threshold)
+                completed.add((seed,name,"A0_legacy_like")); save(); print(f"Seed {seed} {name}: saved A0",flush=True)
+            if (seed,name,"A1_fold_local_scale") not in completed:
+                print(f"Seed {seed} {name}: fitting A1 fold-local pipeline...",flush=True)
+                corrected=pipeline(name,seed).fit(X[tr],y[tr]); p1=corrected.predict_proba(X[hold])[:,1]
+                record(rows,seed,name,"A1_fold_local_scale",y[hold],p1,.5)
+                completed.add((seed,name,"A1_fold_local_scale")); save(); print(f"Seed {seed} {name}: saved A1",flush=True)
 
             # A2: random train/validation/holdout, threshold set on validation only.
-            trainval,test=train_test_split(np.arange(len(y)),test_size=.2,random_state=seed,stratify=y)
-            train_idx,val_idx=train_test_split(trainval,test_size=.25,random_state=seed,stratify=y[trainval])
-            model=pipeline(name,seed).fit(X[train_idx],y[train_idx]); pv=model.predict_proba(X[val_idx])[:,1]
-            threshold,_=best_threshold(y[val_idx],pv); pt=model.predict_proba(X[test])[:,1]
-            record(rows,seed,name,"A2_validation_threshold",y[test],pt,threshold)
+            if (seed,name,"A2_validation_threshold") not in completed:
+                print(f"Seed {seed} {name}: fitting A2 random validation protocol...",flush=True)
+                trainval,test=train_test_split(np.arange(len(y)),test_size=.2,random_state=seed,stratify=y)
+                train_idx,val_idx=train_test_split(trainval,test_size=.25,random_state=seed,stratify=y[trainval])
+                model=pipeline(name,seed).fit(X[train_idx],y[train_idx]); pv=model.predict_proba(X[val_idx])[:,1]
+                threshold,_=best_threshold(y[val_idx],pv); pt=model.predict_proba(X[test])[:,1]
+                record(rows,seed,name,"A2_validation_threshold",y[test],pt,threshold)
+                completed.add((seed,name,"A2_validation_threshold")); save(); print(f"Seed {seed} {name}: saved A2",flush=True)
 
             # A3: same steps as A2, using contiguous chronological partitions inside development data.
-            ordered=dev.reset_index(drop=True); split=chronological_split(ordered)
-            train_x=split.train[FEATURE_COLUMNS].to_numpy(); train_y=split.train.Class.to_numpy()
-            val_x=split.validation[FEATURE_COLUMNS].to_numpy(); val_y=split.validation.Class.to_numpy()
-            test_x=split.test[FEATURE_COLUMNS].to_numpy(); test_y=split.test.Class.to_numpy()
-            model=pipeline(name,seed).fit(train_x,train_y); pv=model.predict_proba(val_x)[:,1]
-            threshold,_=best_threshold(val_y,pv); pt=model.predict_proba(test_x)[:,1]
-            record(rows,seed,name,"A3_chronological",test_y,pt,threshold)
-    result=pd.DataFrame(rows); result.to_csv("results/ablation.csv",index=False)
+            if (seed,name,"A3_chronological") not in completed:
+                print(f"Seed {seed} {name}: fitting A3 chronological protocol...",flush=True)
+                ordered=dev.reset_index(drop=True); split=chronological_split(ordered)
+                train_x=split.train[FEATURE_COLUMNS].to_numpy(); train_y=split.train.Class.to_numpy()
+                val_x=split.validation[FEATURE_COLUMNS].to_numpy(); val_y=split.validation.Class.to_numpy()
+                test_x=split.test[FEATURE_COLUMNS].to_numpy(); test_y=split.test.Class.to_numpy()
+                model=pipeline(name,seed).fit(train_x,train_y); pv=model.predict_proba(val_x)[:,1]
+                threshold,_=best_threshold(val_y,pv); pt=model.predict_proba(test_x)[:,1]
+                record(rows,seed,name,"A3_chronological",test_y,pt,threshold)
+                completed.add((seed,name,"A3_chronological")); save(); print(f"Seed {seed} {name}: saved A3",flush=True)
+    result=pd.DataFrame(rows); result.to_csv(out,index=False)
     result=result.rename(columns={"stage":"protocol"})
     fig,ax=plt.subplots(figsize=(9,5))
     for model,group in result.groupby("model"):
