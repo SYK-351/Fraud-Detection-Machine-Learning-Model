@@ -70,3 +70,9 @@
 - Result: source checks pass; generated metric cells correctly remain pending final evaluation.
 - Checks: `scripts/check_tex.py` passes; no local LaTeX compiler is available, as expected.
 - Decisions/deviations: The supplied digest does not expose the old bibliography; only its numbered placeholders could be audited. PDF extraction was unavailable in S0.
+
+### 2026-10-27 S10 README and interim QA
+- What: Replaced the placeholder README with reproduction commands, limitations, project structure, and v1-to-v2 fixes. Files: README.md, scripts/update_readme_results.py.
+- Result: results table is generated from saved CV/final metrics; current display correctly says pending.
+- Checks: Seven tests pass; notebook execution and LaTeX source checks pass.
+- Decisions/deviations: Final QA remains open until full CV, single holdout evaluation, ablation, and report numbers are generated.
