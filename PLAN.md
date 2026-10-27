@@ -17,10 +17,10 @@ Decisions: default template IEEEtran journal, two-column | author: S.Yaswanth Kr
 - [x] S2.2 Feature statistics and rankings
 - [x] S2.3 Statistical-method rationale
 ## S3 Pipelines and CV [Tier 1 | ~60k]
-- [ ] S3.1 Hypotheses before model runs
-- [ ] S3.2 Model factory and config snapshot
-- [ ] S3.3 Leakage tests
-- [ ] S3.4 Chunked resumable CV runner
+- [x] S3.1 Hypotheses before model runs
+- [x] S3.2 Model factory and config snapshot
+- [x] S3.3 Leakage tests
+- [x] S3.4 Chunked resumable CV runner
 - [ ] S3.5 CV results, F7, hypothesis outcomes
 ## S4 Final evaluation [Tier 1 | ~60k]
 - [ ] S4.1 Validation threshold and one test evaluation with bootstrap CIs

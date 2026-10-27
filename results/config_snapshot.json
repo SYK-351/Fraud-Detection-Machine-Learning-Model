@@ -1,0 +1,14 @@
+{
+  "seed": 42,
+  "protocol": "chronological 60/20/20; stratified 5-fold CV on train",
+  "features": ["V1..V28", "log1p_amount", "hour_sin", "hour_cos"],
+  "models": {
+    "lr": {"C": 1, "max_iter": 2000},
+    "rf": {"n_estimators": 300, "min_samples_leaf": 2},
+    "knn": {"n_neighbors": 25, "weights": "distance"},
+    "xgb": {"n_estimators": 300, "learning_rate": 0.05, "max_depth": 6, "tree_method": "hist"},
+    "catboost": {"iterations": 500, "depth": 6, "learning_rate": 0.05, "task_type": "CPU"}
+  },
+  "strategies": ["class weights", "SMOTE", "random undersampling"],
+  "status": "config specification; full cross-validation not yet run"
+}

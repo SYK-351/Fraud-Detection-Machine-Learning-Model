@@ -34,3 +34,9 @@
 - Result: Train-only sample has 170,235 rows and 342 frauds; top absolute marginal effect features are V14, V12, V4, and V3.
 - Checks: EDA script completed; outputs are PNG and PDF at 300 dpi.
 - Decisions/deviations: F1 is labeled descriptive on deduplicated data; inferential feature statistics use train only.
+
+### 2026-10-27 S3 implementation and FAST run
+- What: Added model pipelines, fold-local resampling, resumable CV, config snapshot, pre-run hypotheses, and leakage tests. Files: src/fraud/models.py, evaluation.py, plots.py, scripts/run_cv.py, results/config_snapshot.json.
+- Result: FAST weighted LR mean PR-AUC 0.944 in results/cv_fast/lr_weights.csv; this is development-only.
+- Checks: Seven tests pass; FAST five-fold run completed and estimated full pair runtime.
+- Decisions/deviations: Full CV across all model/strategy pairs remains pending; FAST artifacts are isolated from the full-results directory.
