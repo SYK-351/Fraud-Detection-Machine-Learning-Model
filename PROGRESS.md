@@ -1,6 +1,6 @@
 # PROGRESS
 ## Status (edit in place)
-- Current: S0.6 | Next action: complete dependency installation, then run full resumable CV; TEST_EVALUATED: no
+- Current: S10 | Next action: final QA, explicit-path stage commits, and final status; TEST_EVALUATED: yes (one evaluation)
 - Tokens used (user-reported at last gate): n/a (local Luna; no Radox gateway) | Last commit: 1548ce4 docs: document reproduction and project limitations
 ## Log (append only, newest last)
 ### 2026-10-27 S0 setup in progress
@@ -82,3 +82,45 @@
 - Result: hash mismatch could not be reproduced; pytest, core data stack, notebook tools, and imbalanced-learn installed.
 - Checks: Seven tests, notebook execution, EDA, FAST CV, compileall, and LaTeX source checks pass.
 - Decisions/deviations: Full requirements install stalled on the CatBoost wheel; no CatBoost or full CV run, and the holdout remains untouched.
+
+### 2026-10-27 S3 DONE
+- What: Completed all configured five-fold CV pairs and generated F7. Files: results/cv/, results/cv_results.csv, results/cv_summary.csv, figures/f07_cv_pr_auc.*.
+- Result: XGBoost/weights led CV at PR-AUC 0.8717; CatBoost/weights was 0.8676.
+- Checks: All 14 requested model/strategy pairs have five saved folds; full summary generated.
+- Decisions/deviations: The preferred top-three set uses the one-standard-error rule and faster fit time.
+
+### 2026-10-27 S4 DONE; TEST_EVALUATED: yes
+- What: Fixed the duplicate fit-time column handling, then evaluated the locked top-three selection once. Files: scripts/run_final.py, results/final_metrics.json, results/test_probabilities.npz, figures/f08-f10.*.
+- Result: Test has 56,746 rows and 74 frauds; XGBoost/weights PR-AUC 0.7952 (95% CI 0.7058–0.8756), recall 0.7432, precision 0.9016.
+- Checks: Dummy PR-AUC 0.0013; all-legit accuracy 0.9987; paired top-two PR-AUC difference CI [-0.0037, 0.0278].
+- Decisions/deviations: The paired interval includes zero, so there is no evidence of a top-two PR-AUC difference. Holdout has been accessed exactly once.
+
+### 2026-10-27 S5 DONE
+- What: Completed A0-A3 for RF and XGBoost across three seeds and generated F12. Files: scripts/run_ablation.py, results/ablation.csv, figures/f12_protocol_ablation.*.
+- Result: Mean F1 for chronological A3 was 0.823 (RF) and 0.602 (XGBoost); random A2 means were 0.857 and 0.841.
+- Checks: All 24 seed/model/stage rows saved; run is resumable and excluded the primary chronological holdout.
+- Decisions/deviations: The old digest's RF F1 reference is not directly comparable: this A0 uses development-only random partitions, de-duplicated data, seed-specific splits, and a threshold selected on its evaluation partition rather than a fixed 0.5 threshold.
+
+### 2026-10-27 S6 DONE; S7.1-S7.2 DONE
+- What: Computed tree SHAP and validation permutation importance, error profiles, out-of-fold calibration, and review-cost sensitivity. Files: results/permutation_importance.csv, shap_importance.csv, validation_error_profile.csv, calibration_curve.csv, cost_sensitivity.csv, figures/f11/f13/f14.*.
+- Result: Selected XGBoost/weights validation errors: 18 false negatives and 39 true positives; SHAP was computed on a 1,000-row validation sample.
+- Checks: `scripts/run_extensions.py` completed successfully; primary test holdout was not read.
+- Decisions/deviations: Cost results are illustrative across review costs 0–50 per alert; anonymized PCA features are not given business interpretations.
+
+### 2026-10-27 S7 DONE
+- What: Ran three-setting randomized searches for the top two CV models, with five-fold training CV and a validation-only recheck. Files: scripts/run_tuning.py, results/tuning_results.json.
+- Result: XGBoost tuned CV PR-AUC 0.8661 / validation PR-AUC 0.7721; CatBoost tuned CV PR-AUC 0.8652 / validation PR-AUC 0.7556.
+- Checks: 15 CV fits per model completed; no test predictions or labels were read.
+- Decisions/deviations: Tuning uses three settings per model to keep CPU runtime bounded; the untouched original test evaluation remains the only holdout result.
+
+### 2026-10-27 S8 DONE
+- What: Updated the explanatory notebook to show protocol ablation and tuning outputs, then rebuilt and executed it. Files: notebooks/main.py, main.ipynb.
+- Result: Notebook reads saved CV, final, ablation, and extension outputs; heavy fits remain outside notebook execution.
+- Checks: Jupytext conversion and `nbconvert --execute --inplace` completed successfully.
+- Decisions/deviations: Notebook signature storage was redirected to a writable temp data directory; execution only reads cached model results.
+
+### 2026-10-27 S9 DONE
+- What: Expanded the IEEEtran report with generated result tables and figures and rebuilt the Overleaf archive. Files: report/main.tex, report/generated/, report/figures/, report/overleaf_upload.zip.
+- Result: The report now includes cross-validation, the single holdout, ablation, explainability, calibration, cost sensitivity, and tuning results.
+- Checks: `scripts/check_tex.py` passed; the desktop LaTeX compiler compiled the saved source successfully.
+- Decisions/deviations: The old report bibliography could not be recovered from the supplied digest; this limitation and the handling of its two visible placeholders are documented in `docs/CITATION_AUDIT.md`.

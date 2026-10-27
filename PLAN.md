@@ -6,7 +6,7 @@ Decisions: default template IEEEtran journal, two-column | author: S.Yaswanth Kr
 - [x] S0.3 Hooks + settings
 - [ ] S0.4 Report digest supplement (PDF extraction unavailable; bibliography coverage note logged)
 - [x] S0.5 Project scaffold and planning files
-- [ ] S0.6 Verify venv and dependencies
+- [x] S0.6 Verify venv and dependencies
 ## S1 Data layer [Tier 1 | ~30k]
 - [x] S1.1 Load, schema, dedupe, features
 - [x] S1.2 Chronological and legacy splits
@@ -21,21 +21,22 @@ Decisions: default template IEEEtran journal, two-column | author: S.Yaswanth Kr
 - [x] S3.2 Model factory and config snapshot
 - [x] S3.3 Leakage tests
 - [x] S3.4 Chunked resumable CV runner
-- [ ] S3.5 CV results, F7, hypothesis outcomes
+- [x] S3.5 CV results, F7, and hypothesis outcomes
 ## S4 Final evaluation [Tier 1 | ~60k]
-- [ ] S4.1 Validation threshold and one test evaluation with bootstrap CIs
-- [ ] S4.2 Dummy and all-legit baselines
-- [ ] S4.3 Results and F8-F10
+- [x] S4.1 Validation threshold and one test evaluation with bootstrap CIs
+- [x] S4.2 Dummy and all-legit baselines
+- [x] S4.3 Results and F8-F10
 ## S5 Protocol ablation [Tier 1 | ~40k]
-- [ ] S5.1-S5.3 Compare A0-A3 on three seeds and report F12
+- [x] S5.1-S5.3 Compare A0-A3 on three seeds and report F12
 ## S6 Explainability [Tier 2 | ~50k]
-- [ ] S6.1-S6.3 SHAP, permutation importance, error profiles
+- [x] S6.1-S6.3 SHAP, permutation importance, error profiles
 ## S7 Cost/calibration/tuning [Tier 2 | ~50k]
-- [ ] S7.1-S7.3 Calibration, review-cost sensitivity, limited tuning
+- [x] S7.1-S7.2 Calibration and review-cost sensitivity
+- [x] S7.3 Bounded CV tuning and validation recheck
 ## S8 Notebook [Tier 1 | ~50k]
-- [ ] S8.1-S8.2 Refactor, cache results, execute
+- [x] S8.1-S8.2 Refactor, cache results, execute
 ## S9 Report [Tier 1 | ~80k]
-- [ ] S9.1 Citation audit
-- [ ] S9.2-S9.3 Self-contained IEEEtran report and asset export
+- [x] S9.1 Citation audit (old bibliography unavailable in supplied digest; limitation recorded)
+- [x] S9.2-S9.3 Self-contained IEEEtran report and asset export
 ## S10 README and QA [Tier 1 | ~25k]
 - [ ] S10.1-S10.3 README, QA, final status
