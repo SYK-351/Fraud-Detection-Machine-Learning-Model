@@ -40,3 +40,9 @@
 - Result: FAST weighted LR mean PR-AUC 0.944 in results/cv_fast/lr_weights.csv; this is development-only.
 - Checks: Seven tests pass; FAST five-fold run completed and estimated full pair runtime.
 - Decisions/deviations: Full CV across all model/strategy pairs remains pending; FAST artifacts are isolated from the full-results directory.
+
+### 2026-10-27 S4 implementation ready; holdout pending
+- What: Added validation threshold selection, stratified bootstrap metrics, paired comparison, baselines, and F8-F10 generation. Files: scripts/run_final.py, src/fraud/evaluation.py.
+- Result: no holdout metrics; test set remains unevaluated.
+- Checks: source compiles; final evaluator requires full results/cv_summary.csv and full fold outputs.
+- Decisions/deviations: Preserve the one-touch holdout rule; do not run this stage using FAST results.
