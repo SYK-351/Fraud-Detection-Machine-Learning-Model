@@ -64,3 +64,9 @@
 - Result: notebook outputs read generated audit and EDA files; final metrics remain pending.
 - Checks: Jupytext conversion and `python -m nbconvert --execute --to notebook --inplace main.ipynb` succeeded.
 - Decisions/deviations: Heavy fitting stays in scripts; notebook uses RUN_HEAVY=False.
+
+### 2026-10-27 S9 report scaffold ready; final evidence pending
+- What: Added IEEEtran journal source, BibTeX references, generated numbers/tables, citation audit, Overleaf ZIP, and static checks. Files: report/, docs/CITATION_AUDIT.md, scripts/export_report_assets.py, scripts/check_tex.py.
+- Result: source checks pass; generated metric cells correctly remain pending final evaluation.
+- Checks: `scripts/check_tex.py` passes; no local LaTeX compiler is available, as expected.
+- Decisions/deviations: The supplied digest does not expose the old bibliography; only its numbered placeholders could be audited. PDF extraction was unavailable in S0.
