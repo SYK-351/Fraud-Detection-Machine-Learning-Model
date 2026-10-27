@@ -1,7 +1,7 @@
 # PROGRESS
 ## Status (edit in place)
-- Current: S3.5 | Next action: run full resumable cross-validation; TEST_EVALUATED: no
-- Tokens used (user-reported at last gate): n/a (local Luna; no Radox gateway) | Last commit: 09def8b Add gitignore for dataset and catboost files
+- Current: S0.6 | Next action: complete dependency installation, then run full resumable CV; TEST_EVALUATED: no
+- Tokens used (user-reported at last gate): n/a (local Luna; no Radox gateway) | Last commit: 1548ce4 docs: document reproduction and project limitations
 ## Log (append only, newest last)
 ### 2026-10-27 S0 setup in progress
 - What: Read project brief and report digest; requested and received S0.1 decisions. Files: PROJECT_BRIEF.md, REPORT_DIGEST.md.
@@ -76,3 +76,9 @@
 - Result: results table is generated from saved CV/final metrics; current display correctly says pending.
 - Checks: Seven tests pass; notebook execution and LaTeX source checks pass.
 - Decisions/deviations: Final QA remains open until full CV, single holdout evaluation, ablation, and report numbers are generated.
+
+### 2026-10-27 Dependency retry status
+- What: Checked the supplied pip hash failure against the current environment. Files: requirements.txt unchanged; no hash requirements or pip hash policy configured.
+- Result: hash mismatch could not be reproduced; pytest, core data stack, notebook tools, and imbalanced-learn installed.
+- Checks: Seven tests, notebook execution, EDA, FAST CV, compileall, and LaTeX source checks pass.
+- Decisions/deviations: Full requirements install stalled on the CatBoost wheel; no CatBoost or full CV run, and the holdout remains untouched.
