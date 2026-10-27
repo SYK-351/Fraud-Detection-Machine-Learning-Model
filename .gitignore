@@ -1,2 +1,28 @@
 creditcard.csv
 catboost_info/
+PROJECT_BRIEF.md
+# Data and environments
+data/
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+
+.jupyter_data/

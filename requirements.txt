@@ -1,0 +1,15 @@
+pandas
+numpy
+scipy
+scikit-learn
+imbalanced-learn
+xgboost
+catboost
+matplotlib
+seaborn
+shap
+jupytext
+nbconvert
+nbformat
+pytest
+ipykernel
