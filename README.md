@@ -4,10 +4,25 @@ A reproducible, leakage-aware refactor of the original credit-card fraud noteboo
 
 ## Project status
 
-The data audit, train-only EDA, split/leakage tests, FAST logistic-regression smoke run, notebook source, and IEEEtran report scaffold are present. Full CV, final holdout evaluation, ablation, explainability, and cost analysis remain pending. FAST metrics are development diagnostics and are not final results.
+The complete five-fold CV, one chronological holdout evaluation, three-seed protocol ablation, validation explainability, calibration, review-cost sensitivity, and bounded tuning are saved under `results/`. CV selected XGBoost with class weights; it achieved holdout PR-AUC 0.7952 (95% stratified bootstrap CI 0.7058–0.8756). FAST metrics are development diagnostics and are not final results.
 
 <!--RESULTS-START-->
-Results are pending full cross-validation and the single final holdout evaluation.
+| Model / strategy | CV mean PR-AUC | Holdout PR-AUC |
+|---|---:|---:|
+| xgb / weights | 0.8717 | 0.7952 |
+| catboost / weights | 0.8676 | 0.7840 |
+| rf / smote | 0.8667 | 0.8124 |
+| xgb / smote | 0.8606 | pending |
+| rf / weights | 0.8580 | pending |
+| catboost / smote | 0.8559 | pending |
+| knn / none | 0.8239 | pending |
+| xgb / undersample | 0.7351 | pending |
+| lr / smote | 0.7202 | pending |
+| rf / undersample | 0.7194 | pending |
+| lr / weights | 0.7107 | pending |
+| knn / undersample | 0.7070 | pending |
+| catboost / undersample | 0.6602 | pending |
+| lr / undersample | 0.6169 | pending |
 
 <!--RESULTS-END-->
 

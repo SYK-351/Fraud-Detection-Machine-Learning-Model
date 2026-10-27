@@ -1,0 +1,13 @@
+\begin{tabular}{llrrrr}
+\toprule Model & Protocol & F1 mean & F1 SD & PR-AUC mean & Recall mean \\
+\midrule
+rf & A0 legacy-like & 0.871 & 0.019 & 0.853 & 0.821 \\
+rf & A1 fold-local & 0.861 & 0.026 & 0.852 & 0.825 \\
+rf & A2 validation threshold & 0.857 & 0.032 & 0.838 & 0.796 \\
+rf & A3 chronological & 0.823 & 0.006 & 0.744 & 0.744 \\
+xgb & A0 legacy-like & 0.863 & 0.013 & 0.842 & 0.825 \\
+xgb & A1 fold-local & 0.751 & 0.006 & 0.843 & 0.858 \\
+xgb & A2 validation threshold & 0.841 & 0.026 & 0.835 & 0.800 \\
+xgb & A3 chronological & 0.602 & 0.042 & 0.724 & 0.756 \\
+\bottomrule
+\end{tabular}

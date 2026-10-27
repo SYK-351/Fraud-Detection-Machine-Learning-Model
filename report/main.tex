@@ -10,39 +10,85 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-Credit-card fraud detection combines a rare positive class with time-dependent behavior. This study builds a reproducible comparison of linear, neighborhood, and tree-based classifiers on the anonymized ULB credit-card dataset. It uses chronological data partitions, fold-local preprocessing and resampling, validation-selected operating thresholds, and uncertainty intervals for the final evaluation. The dataset contains \DataRows{} deduplicated transactions and \FraudCount{} fraud cases. Full cross-validation and final metrics are populated from the generated results assets; no result is asserted before those files exist.
+Credit-card fraud detection combines a rare positive class with time-dependent behavior. This study compares linear, neighborhood, and tree-based classifiers under chronological partitions, fold-local preprocessing and resampling, validation-selected thresholds, and uncertainty intervals. After exact deduplication, the dataset contains \DataRows{} transactions and \FraudCount{} fraud cases. The best cross-validation model and single holdout results are generated from the saved analysis outputs; the holdout estimate is \BestPRAUC{} average precision for \BestModel{}.
 \end{abstract}
 \begin{IEEEkeywords}
 Fraud detection, imbalanced learning, data leakage, precision-recall analysis, reproducibility.
 \end{IEEEkeywords}
+
 \section{Introduction}
-Accuracy can be dominated by the majority class when fraud is rare. We compare several model families under a chronological protocol, quantify uncertainty, and measure the effect of correcting common evaluation errors. Real fraud systems also face delayed verification and non-stationarity, motivating time-aware evaluation \cite{dalpozzo2018,dalpozzo2015}.
+Accuracy can be dominated by the majority class when fraud is rare. We compare model families and imbalance strategies under a chronological protocol, quantify uncertainty, and measure how evaluation choices change development-set results. Real fraud systems also face delayed verification and non-stationarity, motivating time-aware evaluation \cite{dalpozzo2018,dalpozzo2015}. The short period in this dataset does not establish robustness to long-term drift.
+
 \section{Related Work}
-Precision-recall analysis is informative under strong class imbalance \cite{saito2015}. Prior fraud research emphasizes realistic evaluation conditions and posterior-probability calibration under undersampling \cite{dalpozzo2018,dalpozzo2015}. SMOTE interpolates minority examples, but its original evaluation does not establish that it improves boosting or PR-AUC \cite{chawla2002}. Leakage separates training and prediction information and must be controlled throughout model selection \cite{kaufman2012}.
-\section{Dataset}
-The dataset contains anonymized principal-component features, elapsed transaction time, amount, and a binary label. Time is measured in seconds since the first transaction, not wall-clock time. Exact duplicates are removed before splitting. The audit records the resulting counts and per-partition fraud totals. The dataset covers a short window and cannot establish generalization under long-term concept drift.
+Precision-recall analysis is informative under strong class imbalance \cite{saito2015}. Prior fraud research emphasizes realistic evaluation conditions and probability calibration under undersampling \cite{dalpozzo2018,dalpozzo2015}. SMOTE interpolates minority examples, but its original evaluation does not establish that it improves boosting or PR-AUC \cite{chawla2002}. Leakage separates training information from prediction and must be controlled throughout selection \cite{kaufman2012}.
+
+\section{Dataset and Exploratory Analysis}
+The data contains anonymized principal-component features, elapsed transaction time, amount, and a binary label. Time is measured in seconds since the first transaction, not wall-clock time. Exact duplicate rows are removed before splitting. The chronological partitions contain \DataRows{} total rows and \FraudCount{} fraud cases; the split-specific counts are recorded in \texttt{results/data\_audit.json}. The data covers about two days and has no card or merchant identifiers.
+\IfFileExists{figures/f01_class_imbalance.pdf}{\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{figures/f01_class_imbalance.pdf}\caption{Class imbalance motivates average precision as the primary metric.}\label{fig:imbalance}\end{figure}}{}
+\IfFileExists{figures/f04_feature_screens.pdf}{\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{figures/f04_feature_screens.pdf}\caption{Train-only univariate screens are descriptive and do not establish model importance.}\label{fig:features}\end{figure}}{}
+
 \section{Models}
-Logistic regression is a fast, convex baseline with readable coefficients, but its linear boundary may miss interactions and it is sensitive to scaling. Random forests capture nonlinear interactions with little preprocessing, but vote-based probabilities can be coarse \cite{breiman2001}. Distance-weighted nearest neighbors provide a simple local model, but distance becomes less useful in high dimensions and prediction can be costly. XGBoost combines gradient boosting with regularization and subsampling \cite{chen2016}. CatBoost uses ordered boosting to reduce prediction shift; its categorical-feature machinery is not relevant to this numeric dataset \cite{prokhorenkova2018}. The hypotheses and outcomes are recorded with the generated cross-validation artifacts.
+The class-prior dummy defines no-skill ranking performance. Logistic regression is convex, fast, and readable, but its linear boundary may miss interactions and it is sensitive to scaling. Random forests capture nonlinear interactions without scaling, though vote-based probabilities can be coarse \cite{breiman2001}. Distance-weighted nearest neighbors provide a local reference, but distance degrades in high dimensions and prediction is costly. XGBoost combines gradient boosting with regularization and subsampling \cite{chen2016}. CatBoost uses ordered boosting to reduce prediction shift; its categorical-feature machinery is irrelevant to these numeric inputs \cite{prokhorenkova2018}. The hypotheses and measured outcomes are stored in \texttt{results/hypotheses.md}.
+
 \section{Methodology}
-The primary protocol sorts deduplicated rows by elapsed time and makes contiguous training, validation, and holdout partitions. Cross-validation on training data selects model and imbalance strategy using average precision. Scaling and resampling are fit only inside each training fold. Thresholds are selected on validation data. SMOTE interpolates between minority examples; undersampling discards majority examples and can shift probability estimates. Evaluation includes average precision, ROC-AUC, Matthews correlation coefficient, recall at a precision constraint, and precision at a fixed alert budget \cite{saito2015,chicco2020}.
+The primary protocol sorts deduplicated rows by elapsed time and makes contiguous training, validation, and holdout partitions. Five-fold stratified cross-validation on training data selects models and imbalance strategies using average precision. Scaling and resampling occur inside each training fold. The threshold is selected on validation data; the chronological test set is evaluated once. Strategies compare class weights, fold-local SMOTE, and random undersampling; KNN uses no-resampling and undersampling because SMOTE makes its CPU prediction cost excessive. Metrics include average precision, ROC-AUC, Matthews correlation coefficient, recall at a validation-selected precision constraint, and precision at a fixed alert budget \cite{saito2015,chicco2020}.
+\IfFileExists{figures/f06_leakage_protocol.pdf}{\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{figures/f06_leakage_protocol.pdf}\caption{Preprocessing and resampling are learned within training partitions; threshold choice uses validation data.}\label{fig:protocol}\end{figure}}{}
+
 \section{Experimental Setup}
-The study is configured for CPU execution on an Intel i7 without a GPU. Seeds and model parameters are stored in the configuration snapshot. Per-fold fit times and output files support chunked resumption. The full runtime and exact metric table are generated from the results directory.
+The study uses CPU implementations configured for an Intel i7 without a GPU. Seeds and fixed parameters are stored in the configuration snapshot. Cross-validation runs sequentially by model and strategy and saves each result bundle for resumption. Full CV results, out-of-fold predictions, model settings, and timing are in \texttt{results/}.
+
 \section{Results}
-The final model selected from saved cross-validation outputs is \BestModel{} with holdout average precision \BestPRAUC{}. Table~\ref{tab:metrics} is generated directly from the final metrics file. Figures are included when generated by the corresponding analysis stage. No conclusion should be drawn from FAST development runs.
+\subsection{Cross-Validation Model Selection}
+\BestCVModel{} achieved the highest mean training-fold average precision, \BestCVPRAUC{}. The one-standard-error rule favored faster candidates when their scores were close. The FAST smoke run is excluded from model selection.
+\IfFileExists{figures/f07_cv_pr_auc.pdf}{\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{figures/f07_cv_pr_auc.pdf}\caption{Fold-mean average precision and variability across model and imbalance strategy.}\label{fig:cv}\end{figure}}{}
+
+\subsection{Single Holdout Evaluation}
+The locked selection was evaluated once on \TestRows{} chronological holdout rows. \BestModel{} achieved average precision \BestPRAUC{} with stratified-bootstrap 95\% interval [\BestPRAUCLow{}, \BestPRAUCHigh{}]. Thresholds shown in the table were selected on validation data, not on the holdout.
 \begin{table}[t]
 \centering
-\caption{Single-shot holdout metrics generated from results.}
+\caption{Single-shot holdout metrics generated from saved results.}
 \label{tab:metrics}
 \input{generated/tables/final_metrics.tex}
 \end{table}
-\IfFileExists{figures/f01_class_imbalance.pdf}{\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{figures/f01_class_imbalance.pdf}\caption{Severe class imbalance motivates PR-AUC as the primary measure.}\label{fig:imbalance}\end{figure}}{}
-\IfFileExists{figures/f04_feature_screens.pdf}{\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{figures/f04_feature_screens.pdf}\caption{Train-only univariate screens are descriptive and do not establish feature importance.}\label{fig:features}\end{figure}}{}
-\section{Ablation}
-The ablation compares the legacy-style protocol with progressively corrected preprocessing, threshold selection, and chronology. Its metrics and uncertainty must be read from the generated ablation file. Differences are reported as measured; leakage effects are not presumed.
+\IfFileExists{figures/f08_test_pr_curves.pdf}{\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{figures/f08_test_pr_curves.pdf}\caption{Holdout precision-recall curves with the prevalence reference and validation-selected operating points.}\label{fig:pr}\end{figure}}{}
+\IfFileExists{figures/f09_confusion_matrices.pdf}{\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{figures/f09_confusion_matrices.pdf}\caption{Holdout confusion matrices at validation-selected thresholds.}\label{fig:confusion}\end{figure}}{}
+\IfFileExists{figures/f10_validation_thresholds.pdf}{\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{figures/f10_validation_thresholds.pdf}\caption{Thresholds were selected on validation data; curves show their operating trade-offs.}\label{fig:threshold}\end{figure}}{}
+The paired top-two average-precision difference interval is [\PairedDiffLow{}, \PairedDiffHigh{}]. Because it includes zero, these data provide no evidence of a difference between the top two candidates.
+
+\subsection{Protocol Ablation}
+The development-only ablation compares legacy-like random evaluation, fold-local scaling, validation thresholding, and chronological evaluation over three seeds. The chronological results are lower for both tree models, but A0 selects its threshold on its own evaluation partition; this comparison therefore measures the combined protocol changes and does not isolate scaler leakage.
+\begin{table}[t]
+\centering
+\caption{Development-only protocol ablation across three seeds.}
+\label{tab:ablation}
+\input{generated/tables/ablation_metrics.tex}
+\end{table}
+\IfFileExists{figures/f12_protocol_ablation.pdf}{\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{figures/f12_protocol_ablation.pdf}\caption{Protocol-specific F1 means and seed spread; the primary test holdout is excluded.}\label{fig:ablation}\end{figure}}{}
+
+\subsection{Explainability and Error Analysis}
+The selected tree model's SHAP values and validation permutation importance describe model behavior, not causality. V1--V28 are anonymized PCA components without direct business meaning. False-negative and true-positive profiles are descriptive and do not identify customer or merchant causes.
+\IfFileExists{figures/f14_explainability_errors.pdf}{\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{figures/f14_explainability_errors.pdf}\caption{Validation feature attribution and fraud error counts at the validation-selected threshold.}\label{fig:explain}\end{figure}}{}
+
+\subsection{Calibration, Cost Sensitivity, and Tuning}
+Out-of-fold reliability curves compare logistic regression with class weights and SMOTE. Review cost is varied over a sensitivity range; flagged amount minus review expense is illustrative and is not measured recovery or profit. The bounded search selects settings by training-fold average precision and rechecks them on validation only; the original holdout metrics remain those from the one-time evaluation.
+\IfFileExists{figures/f11_reliability.pdf}{\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{figures/f11_reliability.pdf}\caption{Out-of-fold calibration curves for weighted and SMOTE logistic regression.}\label{fig:calibration}\end{figure}}{}
+\IfFileExists{figures/f13_cost_sensitivity.pdf}{\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{figures/f13_cost_sensitivity.pdf}\caption{Illustrative flagged amount minus review cost across the prespecified sensitivity range.}\label{fig:cost}\end{figure}}{}
+\begin{table}[t]
+\centering
+\caption{Bounded training-CV tuning and validation-only recheck.}
+\label{tab:tuning}
+\input{generated/tables/tuning_results.tex}
+\end{table}
+
 \section{Discussion and Limitations}
-The anonymized PCA features have no direct business interpretation. The dataset covers a short time span, contains few frauds, and lacks card or merchant identifiers. No concept-drift deployment claim is supported. Review-cost analysis is illustrative because actual review cost and recovery behavior were not provided. SMOTE claims are limited to the evidence in its original study \cite{chawla2002}.
+The holdout contains relatively few fraud cases, so bootstrap intervals are wide and a small number of classifications affects threshold metrics. The dataset covers a short window, has anonymized PCA features, and lacks card or merchant identifiers. No long-term drift, delayed-label, deployment, or real review-cost claim is supported. SMOTE conclusions are limited to the measured results and the scope of its original study \cite{chawla2002}.
+
 \section{Conclusion}
-The best leakage-controlled model and the measured change from the legacy protocol must be interpreted with the generated confidence intervals and ablation results. Overlapping intervals indicate no evidence of a difference. Deployment would require longer time horizons, delayed-label handling, identifiers or additional context, and measured review outcomes, none of which this dataset provides.
+Under train-only cross-validation, \BestCVModel{} had the highest mean average precision (\BestCVPRAUC{}); on the single chronological holdout, \BestModel{} achieved \BestPRAUC{} average precision (Table~\ref{tab:metrics}; Figs.~\ref{fig:cv} and~\ref{fig:pr}). Its bootstrap interval was [\BestPRAUCLow{}, \BestPRAUCHigh{}], and the paired top-two interval [\PairedDiffLow{}, \PairedDiffHigh{}] includes zero, so there is no evidence of a difference between those two models (Table~\ref{tab:metrics}). The A0-to-A3 mean F1 changes were \RFAblationDrop{} for RF and \XGBAblationDrop{} for XGBoost across the three development seeds (Table~\ref{tab:ablation}; Fig.~\ref{fig:ablation}); these combined-protocol contrasts do not identify a causal leakage effect. Deployment would require evaluation beyond this \TestRows-row holdout, longer time horizons, delayed-label handling, and measured review outcomes (Table~\ref{tab:metrics}; Fig.~\ref{fig:ablation}).
+
+\section{Future Work}
+Future evaluation should include longer chronological windows, delayed-label simulation, additional card or merchant context where permitted, and a prospective measurement of investigator workload and recovered amounts. Any deployment decision would need recalibration and monitoring beyond this benchmark.
+
 \bibliographystyle{IEEEtran}
 \bibliography{references}
 \end{document}
