@@ -20,7 +20,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from fraud.data import FEATURE_COLUMNS, chronological_split, load_transactions
 from fraud.config import DATA_PATH, SEED
 
-sns.set_theme(style="whitegrid", palette="colorblind")
+sns.set_theme(style="whitegrid", palette="colorblind", rc={
+    "font.size": 14, "axes.titlesize": 14, "axes.labelsize": 14,
+    "xtick.labelsize": 14, "ytick.labelsize": 14, "legend.fontsize": 14,
+})
 OUT = Path("figures"); OUT.mkdir(exist_ok=True)
 RESULTS = Path("results"); RESULTS.mkdir(exist_ok=True)
 
@@ -55,13 +58,13 @@ def main():
 
     hourly = train.assign(hour=((train.Time // 3600) % 24).astype(int)).groupby("hour").Class.agg(["size", "sum"])
     hourly = hourly.reindex(range(24), fill_value=0); hourly["rate"] = hourly["sum"] / hourly["size"].replace(0, np.nan)
-    fig, axes = plt.subplots(2, 1, figsize=(9, 6), sharex=True)
+    fig, axes = plt.subplots(2, 1, figsize=(6.4, 5.6), sharex=True)
     axes[0].bar(hourly.index, hourly["size"], color="#4477AA"); axes[0].set_ylabel("Transactions")
     axes[1].plot(hourly.index, hourly.rate, marker="o", color="#CC6677"); axes[1].set_ylabel("Fraud rate"); axes[1].set_xlabel("Hour from Time (seconds since first transaction)")
     fig.suptitle("Transaction volume and fraud rate vary across the train window")
     save(fig, "f02_hourly_patterns")
 
-    fig, ax = plt.subplots(figsize=(7, 5))
+    fig, ax = plt.subplots(figsize=(6.4, 4.8))
     for label, color, name in [(0, "#4477AA", "Legitimate"), (1, "#CC6677", "Fraud")]:
         vals = np.sort(np.log1p(train.loc[train.Class.eq(label), "Amount"].to_numpy()))
         ax.plot(vals, np.arange(1, len(vals)+1)/len(vals), color=color, label=name)
@@ -82,7 +85,7 @@ def main():
     stats["mutual_information"] = mi
     stats.to_csv(RESULTS / "eda_feature_ranking.csv", index=False)
     top = stats.assign(abs_delta=stats.cliffs_delta.abs()).nlargest(15, "abs_delta").sort_values("cliffs_delta")
-    fig, axes = plt.subplots(1, 2, figsize=(12, 7))
+    fig, axes = plt.subplots(1, 2, figsize=(6.4, 7))
     axes[0].barh(top.feature, top.cliffs_delta, color="#4477AA"); axes[0].set_title("Cliff's delta"); axes[0].set_xlabel("Effect size")
     mi_top = stats.nlargest(15, "mutual_information").sort_values("mutual_information")
     axes[1].barh(mi_top.feature, mi_top.mutual_information, color="#CC6677"); axes[1].set_title("Mutual information"); axes[1].set_xlabel("Nats")

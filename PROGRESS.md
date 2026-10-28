@@ -1,7 +1,7 @@
 # PROGRESS
 ## Status (edit in place)
 - Current: Complete (S0.4 deferred; extraction limitation documented) | TEST_EVALUATED: yes (one evaluation)
-- Tokens used (user-reported at last gate): n/a (local Luna; no Radox gateway) | Last commit: 0edc5a1 chore: ignore training artifacts, verify hooks
+- Tokens used (user-reported at last gate): n/a (local Luna; no Radox gateway) | Last commit: 56af023 feat: extend report export with tables and pairwise tests
 ## Log (append only, newest last)
 ### 2026-10-27 S0 setup in progress
 - What: Read project brief and report digest; requested and received S0.1 decisions. Files: PROJECT_BRIEF.md, REPORT_DIGEST.md.
@@ -165,3 +165,9 @@
 - Result: Test evaluation count remains the saved S4 count; post-hoc intervals are not used for choices.
 - Checks: `pytest -q` passed (7 tests); `scripts/check_tex.py` passed.
 - Decisions/deviations: None.
+
+### 2026-10-28 R2 DONE
+- What: Restyled figures for IEEE print widths and copied updated PDFs into the report package. Files: scripts/run_eda.py, scripts/restyle_report_figures.py, figures/, report/figures/.
+- Result: Report target layout uses nine figures; two-panel components are sized for at least 7 pt text at specified print widths.
+- Checks: EDA source metrics/audit files remained unchanged; cached-result restyler fitted no models; `pytest -q` passed (7 tests), `scripts/check_tex.py` passed.
+- Decisions/deviations: F5 remains available but is optional for the paper; holdout plots were redrawn from saved probabilities/metrics only. Updated report ZIP.

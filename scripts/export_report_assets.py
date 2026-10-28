@@ -111,8 +111,12 @@ def main() -> None:
     config = json.loads((RESULTS / "config_snapshot.json").read_text(encoding="utf-8"))
     final = json.loads((RESULTS / "final_metrics.json").read_text(encoding="utf-8"))
     cv = pd.read_csv(RESULTS / "cv_summary.csv")
-    pair_results = pairwise_ap(audit, final, int(config["seed"]), 1000)
-    (RESULTS / "final_pairwise.json").write_text(json.dumps(pair_results, indent=2) + "\n", encoding="utf-8")
+    pair_path = RESULTS / "final_pairwise.json"
+    if pair_path.exists():
+        pair_results = json.loads(pair_path.read_text(encoding="utf-8"))
+    else:
+        pair_results = pairwise_ap(audit, final, int(config["seed"]), 1000)
+        pair_path.write_text(json.dumps(pair_results, indent=2) + "\n", encoding="utf-8")
 
     # Split table and data-derived prose macros.
     split_rows = []
