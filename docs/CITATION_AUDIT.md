@@ -9,4 +9,9 @@ The supplied report digest says its reference list was not visible in the extrac
 
 The report uses only the references listed in PROJECT_BRIEF.md Section 9. The CatBoost citation supports ordered boosting, not categorical-feature advantages for this numeric dataset. SMOTE is not cited as evidence of improved PR-AUC or boosting performance.
 
-No web lookups were needed for the provided verified-reference list. R11 is not used because the brief identifies its journal version as unconfirmed.
+| Brief reference | Status | Use in report |
+|---|---|---|
+| R10 (`lundberg2017`) | KEEP | Cited where SHAP is introduced and interpreted in Section VII-E. Bibliographic fields are copied exactly from the verified brief. |
+| R11 (`kapoor2022`) | KEEP | Cited in the Introduction and Related Work for leakage and reproducibility context. Bibliographic fields are copied exactly from the verified brief. |
+
+The old report's own reference list is still unrecovered because its PDF text extraction was unavailable during setup. Paste that list if you want the old-reference audit completed. The current report cites only verified entries from the project brief, including R10 and R11 as explicitly required by the rewrite brief.

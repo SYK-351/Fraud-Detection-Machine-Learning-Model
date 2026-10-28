@@ -177,3 +177,9 @@
 - Result: The 171-word abstract distinguishes the CV-selected primary model from holdout rankings; nine figures and twelve tables are included. Author affiliation and email use the details supplied by the author.
 - Checks: Result exporter regenerated 14 CV rows, 3 split rows, and 3 descriptive post-hoc pairs; abstract word count 171; figure/table counts 9/12. `scripts/check_tex.py` currently reports the two R11 and one R10 citations, scheduled for R4.
 - Decisions/deviations: Missing validation per-case scores are explicitly reported as unavailable; no model was rerun. Software versions describe the report-build environment because original per-run versions were not recorded.
+
+### 2026-10-28 R4 DONE
+- What: Added the verified SHAP and leakage/reproducibility references, cited both in their relevant sections, and updated the citation audit. Files: report/references.bib, report/main.tex, docs/CITATION_AUDIT.md.
+- Result: R10 (`lundberg2017`) and R11 (`kapoor2022`) are marked KEEP; the audit records that the original report reference list remains unrecovered and requests it if that audit is desired.
+- Checks: `scripts/check_tex.py` passed with no missing citation keys.
+- Decisions/deviations: Added only the two exact BibTeX entries specified by the rewrite brief.
