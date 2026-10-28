@@ -86,6 +86,17 @@ The final evaluator reads the full CV outputs, chooses thresholds on validation,
 
 `notebooks/main.py` is the Jupytext percent-format source for `main.ipynb`. The notebook reads cached outputs and keeps expensive model fitting in scripts. The report is an IEEEtran journal, two-column Overleaf project in `report/`; regenerate its figures, tables, macros, and `overleaf_upload.zip` with `scripts/export_report_assets.py`.
 
+### Which main file should I use?
+
+- `main.ipynb` is the interactive walkthrough. It displays cached audits and results; it is not the implementation of the model pipeline.
+- `notebooks/main.py` is the editable Jupytext source that corresponds to `main.ipynb`.
+- `report/main.tex` is the paper source, not executable analysis code.
+- For the actual data and model implementation, use `src/fraud/` and the commands in `scripts/` below. `legacy/main_v1.ipynb` is preserved historical code and is not the current workflow.
+
+### Figure provenance
+
+The report's figure PDFs are programmatically plotted artifacts, not AI-generated artwork. F1--F6 are drawn by `scripts/run_eda.py` from the input data (F6 is a code-drawn protocol schematic); F7--F14 are plotted by the experiment scripts or `scripts/restyle_report_figures.py` from saved CV, validation, ablation, calibration, cost, and holdout result files. Restyling uses cached outputs and does not fit predictive models. The report's `figures/` PDFs match their source PDFs in `figures/` byte-for-byte.
+
 ## Model and method rationale
 
 The comparison includes a dummy prior, logistic regression, random forest, distance-weighted KNN, XGBoost, and CatBoost. It tests class weights, SMOTE, and random undersampling inside training folds. KNN uses the no-resampling and undersampling strategies because SMOTE makes its CPU prediction cost excessive.

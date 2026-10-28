@@ -1,7 +1,7 @@
 # PROGRESS
 ## Status (edit in place)
 - Current: Complete (S0.4 deferred; extraction limitation documented) | TEST_EVALUATED: yes (one evaluation)
-- Tokens used (user-reported at last gate): n/a (local Luna; no Radox gateway) | Last commit: 1a97f1d docs: add SHAP and leakage references, update citation audit
+- Tokens used (user-reported at last gate): n/a (local Luna; no Radox gateway) | Last commit: a74f3a4 docs: build report package
 ## Log (append only, newest last)
 ### 2026-10-27 S0 setup in progress
 - What: Read project brief and report digest; requested and received S0.1 decisions. Files: PROJECT_BRIEF.md, REPORT_DIGEST.md.
@@ -189,3 +189,9 @@
 - Result: The built-in compiler succeeded; `scripts/check_tex.py` passed; the ZIP contains `main.tex`, `references.bib`, 14 figure assets, and 13 generated assets. The report has 9 included figures and 12 tables.
 - Checks: Fixed two missing generated CV macros and an 11.8841 pt overfull rationale table reported on the initial compile; the final compile succeeded. Citation keys and labels pass the source checker.
 - Decisions/deviations: The built-in compiler returned only success/failure on the final compile, without page count, float-only-page count, overfull-box summary, or figure preview diagnostics. Those values are not claimed here; figure sizing/readability was visually checked during R2.
+
+### 2026-10-28 R6 DONE
+- What: Clarified the roles of the three `main` artifacts, documented code-based figure provenance, and added the three author-requested citations. Files: README.md, report/main.tex, report/references.bib, docs/CITATION_AUDIT.md.
+- Result: The notebook, notebook source, paper, and executable model scripts are distinguished; report figures are traced to plotting scripts and saved outputs. Added Blagus and Lusa (2013), Fernández et al. (2018), and Lemaître et al. (2017) with in-text citations.
+- Checks: Confirmed all report PDF figure assets have source counterparts and match byte-for-byte; inspected plotting code paths; `scripts/check_tex.py` passed, the built-in LaTeX compiler succeeded, and the refreshed archive contains the new bibliography entries.
+- Decisions/deviations: These author-requested references expand the earlier R1--R11-only citation rule. No models were fitted and no results or plot values were changed.
