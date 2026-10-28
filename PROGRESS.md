@@ -130,3 +130,20 @@
 - Result: Full CV, one holdout evaluation, ablation, extensions, and tuning outputs are documented; no data or model binaries over 5 MB were staged.
 - Checks: Seven tests passed; notebook execution, LaTeX source checks, built-in LaTeX compilation, and `git diff --check` passed.
 - Decisions/deviations: Nothing was pushed. S0.4 remains deferred because PDF extraction tools were unavailable; the supplied digest limitation is recorded in the citation audit.
+### 2026-10-28 R0.1 DONE
+- What: Verified commit-msg and pre-push hook scripts exist and are executable in Git Bash. Files: .git/hooks/commit-msg, .git/hooks/pre-push.
+- Result: Both hook scripts executable; their contents block attribution lines and push.
+- Checks: Git Bash `test -x` passed for both hooks.
+- Decisions/deviations: None.
+
+### 2026-10-28 R0.2 DONE
+- What: Checked branch tracking and remotes. Files: none.
+- Result: `refactor/v2` has no upstream; `origin` exists and was not changed.
+- Checks: `git branch -vv`; `git remote -v`.
+- Decisions/deviations: Preserved the existing remote as instructed.
+
+### 2026-10-28 R0.3 DONE
+- What: Removed tracked CatBoost training artifacts from the index. Files: catboost_info/ (cached removals).
+- Result: `.gitignore` already lists `catboost_info/`; working artifacts remain on disk and are now ignored.
+- Checks: `git rm -r --cached catboost_info`; `pytest -q` passed (7 tests).
+- Decisions/deviations: No `.gitignore` edit was needed because the required pattern already existed.
