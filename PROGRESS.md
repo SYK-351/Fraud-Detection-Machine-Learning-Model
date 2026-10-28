@@ -1,7 +1,7 @@
 # PROGRESS
 ## Status (edit in place)
 - Current: Complete (S0.4 deferred; extraction limitation documented) | TEST_EVALUATED: yes (one evaluation)
-- Tokens used (user-reported at last gate): n/a (local Luna; no Radox gateway) | Last commit: 86a7237 feat: readable multi-panel figure layout
+- Tokens used (user-reported at last gate): n/a (local Luna; no Radox gateway) | Last commit: 1a97f1d docs: add SHAP and leakage references, update citation audit
 ## Log (append only, newest last)
 ### 2026-10-27 S0 setup in progress
 - What: Read project brief and report digest; requested and received S0.1 decisions. Files: PROJECT_BRIEF.md, REPORT_DIGEST.md.
@@ -183,3 +183,9 @@
 - Result: R10 (`lundberg2017`) and R11 (`kapoor2022`) are marked KEEP; the audit records that the original report reference list remains unrecovered and requests it if that audit is desired.
 - Checks: `scripts/check_tex.py` passed with no missing citation keys.
 - Decisions/deviations: Added only the two exact BibTeX entries specified by the rewrite brief.
+
+### 2026-10-28 R5 DONE WITH DIAGNOSTIC LIMIT
+- What: Compiled the saved report, ran the source checker, and rebuilt the self-contained Overleaf ZIP. Files: report/main.tex, report/overleaf_upload.zip, report/generated/, scripts/export_report_assets.py, PROGRESS.md.
+- Result: The built-in compiler succeeded; `scripts/check_tex.py` passed; the ZIP contains `main.tex`, `references.bib`, 14 figure assets, and 13 generated assets. The report has 9 included figures and 12 tables.
+- Checks: Fixed two missing generated CV macros and an 11.8841 pt overfull rationale table reported on the initial compile; the final compile succeeded. Citation keys and labels pass the source checker.
+- Decisions/deviations: The built-in compiler returned only success/failure on the final compile, without page count, float-only-page count, overfull-box summary, or figure preview diagnostics. Those values are not claimed here; figure sizing/readability was visually checked during R2.

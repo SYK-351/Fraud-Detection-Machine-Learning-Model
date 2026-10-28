@@ -54,7 +54,7 @@ Leakage research formalizes the separation between information available during 
 \label{sec:data}
 The ULB transaction data contains anonymized principal-component features \texttt{V1}--\texttt{V28}, a transaction amount, elapsed time, and a binary fraud label. The time variable is seconds since the first transaction, not wall-clock time. After exact duplicate removal, the analysis contains \DataRows{} transactions and \FraudCount{} fraud cases from \RawRows{} raw rows; the elapsed span is \TimeSpanHours{} hours (Table~\ref{tab:splits}). No card or merchant identifiers are available, so the anonymized components cannot be translated into customer, merchant, or transaction mechanisms.
 
-Table~\ref{tab:splits} gives the contiguous time ranges and class rates. The validation fraud rate is about half the training rate (\ValidationFraudRateRatio{} of it), which indicates that class prevalence changes across these adjacent periods. Figure~\ref{fig:data-overview} combines the class distribution and within-train hourly patterns: the imbalance makes AP and alert precision/recall more informative than accuracy, while time variation supports preserving order and deriving cyclical time features. These descriptive patterns do not by themselves establish a deployment drift process.
+Table~\ref{tab:splits} gives the contiguous time ranges and class rates. The validation fraud rate is about half the training rate (\ValidationFraudRateRatio{} of it), which indicates that class prevalence changes across these adjacent periods. Fig.~\ref{fig:data-overview} combines the class distribution and within-train hourly patterns: the imbalance makes AP and alert precision/recall more informative than accuracy, while time variation supports preserving order and deriving cyclical time features. These descriptive patterns do not by themselves establish a deployment drift process.
 
 \begin{table}[!t]
 \centering
@@ -63,7 +63,7 @@ Table~\ref{tab:splits} gives the contiguous time ranges and class rates. The val
 \input{generated/tables/split_metrics.tex}
 \end{table}
 
-Amount distributions overlap across classes, so amount alone is not a sufficient separator. The train-only marginal screens also rank components differently by effect size and mutual information; Figure~\ref{fig:eda} therefore motivates combining amount with the anonymized components and treating univariate rankings as descriptive rather than as model importance.
+Amount distributions overlap across classes, so amount alone is not a sufficient separator. The train-only marginal screens also rank components differently by effect size and mutual information; Fig.~\ref{fig:eda} therefore motivates combining amount with the anonymized components and treating univariate rankings as descriptive rather than as model importance.
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=0.48\textwidth]{figures/f01_class_imbalance.pdf}\hfill
@@ -72,7 +72,7 @@ Amount distributions overlap across classes, so amount alone is not a sufficient
 \label{fig:data-overview}
 \end{figure*}
 
-Figure~\ref{fig:eda} pairs the amount ECDF with the train-only screens. The broad overlap in amounts argues against amount-only decisions, while disagreements among marginal screens call for multivariate validation rather than causal or business interpretations.
+Fig.~\ref{fig:eda} pairs the amount ECDF with the train-only screens. The broad overlap in amounts argues against amount-only decisions, while disagreements among marginal screens call for multivariate validation rather than causal or business interpretations.
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=0.48\textwidth]{figures/f03_amount_ecdf.pdf}\hfill
@@ -90,7 +90,7 @@ Table~\ref{tab:model-rationale} summarizes the mechanism, reason for inclusion, 
 \centering
 \caption{Model families, rationale, and limitations for this numeric, anonymized dataset.}
 \label{tab:model-rationale}
-\begin{tabular}{p{0.13\textwidth}p{0.25\textwidth}p{0.28\textwidth}p{0.27\textwidth}}
+\begin{tabular}{p{0.12\textwidth}p{0.24\textwidth}p{0.27\textwidth}p{0.25\textwidth}}
 \toprule
 Model & Mechanism & Advantage & Limitation in this study \\
 \midrule
@@ -124,7 +124,7 @@ Exact duplicates are removed, rows are stably sorted by elapsed time, and contig
 The model input contains the anonymized components, $\log(1+\mathrm{Amount})$, and cyclical encodings of the elapsed hour. Raw time is excluded because its absolute value is not a wall-clock timestamp and would invite direct use of the observed sequence index. The cyclical representation gives nearby hours similar encodings while retaining within-day patterns. No fitted statistic is used to construct these derived features.
 
 \subsection{C. Leakage control}
-Figure~\ref{fig:protocol} shows the order of information use. Every resampling operation and scaler is fit only on the training part of a fold, validation labels select thresholds, and the final chronological partition is kept for the locked evaluation.
+Fig.~\ref{fig:protocol} shows the order of information use. Every resampling operation and scaler is fit only on the training part of a fold, validation labels select thresholds, and the final chronological partition is kept for the locked evaluation.
 \begin{enumerate}
   \item For each cross-validation fold, fit the model pipeline, including any scaler and resampler, on that fold's training rows only.
   \item Score the held-out fold to estimate AP and secondary ranking metrics; aggregate the saved fold results for selection.
@@ -190,7 +190,7 @@ Undersampling has lower mean AP than both class weights and SMOTE for each tree 
 \input{generated/tables/cv_metrics.tex}
 \end{table*}
 
-Figure~\ref{fig:cv} shows the fold mean and standard deviation for every evaluated pair. The leading means are close relative to fold variability, while undersampling is consistently lower for the tree families; together, the table and plot favor reporting the candidates as close rather than claiming a decisive winner.
+Fig.~\ref{fig:cv} shows the fold mean and standard deviation for every evaluated pair. The leading means are close relative to fold variability, while undersampling is consistently lower for the tree families; together, the table and plot favor reporting the candidates as close rather than claiming a decisive winner.
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/f07_cv_pr_auc.pdf}
@@ -199,7 +199,7 @@ Figure~\ref{fig:cv} shows the fold mean and standard deviation for every evaluat
 \end{figure*}
 
 \subsection{B. Locked chronological holdout}
-The CV-selected primary candidate is XGBoost with class weights, declared before the holdout evaluation; its holdout AP is \XgbWeightsAP{} with a stratified-bootstrap interval shown in Table~\ref{tab:holdout-ranking}. The forest with SMOTE has the numerically largest holdout AP, \RfSmoteAP{}, while CatBoost with class weights has AP \CatboostWeightsAP{}. Table~\ref{tab:holdout-ranking} reports AP and ROC-AUC with intervals for all three; Table~\ref{tab:holdout-thresholds} reports their validation-selected operating points. Figure~\ref{fig:holdout} pairs the PR curves with confusion matrices, whose axes use actual class by row and predicted class by column.
+The CV-selected primary candidate is XGBoost with class weights, declared before the holdout evaluation; its holdout AP is \XgbWeightsAP{} with a stratified-bootstrap interval shown in Table~\ref{tab:holdout-ranking}. The forest with SMOTE has the numerically largest holdout AP, \RfSmoteAP{}, while CatBoost with class weights has AP \CatboostWeightsAP{}. Table~\ref{tab:holdout-ranking} reports AP and ROC-AUC with intervals for all three; Table~\ref{tab:holdout-thresholds} reports their validation-selected operating points. Fig.~\ref{fig:holdout} pairs the PR curves with confusion matrices, whose axes use actual class by row and predicted class by column.
 
 The dummy AP is \DummyAP{}, while the all-legitimate accuracy is \AllLegitAccuracy{}; the latter is not a fraud-detection success measure. The XGBoost and forest thresholds yield identical TP, FP, and FN counts in Table~\ref{tab:holdout-thresholds}, despite different score rankings. The post-hoc XGBoost-minus-CatBoost paired AP difference is \TopCVPairDifference{} (\ConfidenceLevel{}\% CI [\TopCVPairLow{}, \TopCVPairHigh{}]), which includes zero. The XGBoost-minus-forest interval is [\XGBRFPairLow{}, \XGBRFPairHigh{}], also including zero, whereas the CatBoost-minus-forest interval is [\CatRFPairLow{}, \CatRFPairHigh{}]. The latter is post-hoc and is not used to revise the CV-based choice.
 
@@ -219,7 +219,7 @@ The CV-to-holdout AP gaps are \XgbWeightsCVToHoldoutAPDrop{} for XGBoost, \Catbo
 \input{generated/tables/holdout_thresholds.tex}
 \end{table*}
 
-Figure~\ref{fig:holdout} shows that AP ranking and a single threshold's confusion counts answer different questions. The overlapping paired intervals for the CV top pair and for XGBoost versus the forest mean there is no evidence of a difference for those pairs under this holdout sample.
+Fig.~\ref{fig:holdout} shows that AP ranking and a single threshold's confusion counts answer different questions. The overlapping paired intervals for the CV top pair and for XGBoost versus the forest mean there is no evidence of a difference for those pairs under this holdout sample.
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=0.48\textwidth]{figures/f08_test_pr_curves.pdf}\hfill
@@ -231,7 +231,7 @@ Figure~\ref{fig:holdout} shows that AP ranking and a single threshold's confusio
 \subsection{C. Threshold behavior}
 The F1-optimal validation thresholds are \XgbWeightsThreshold{} for XGBoost, \CatboostWeightsThreshold{} for CatBoost, and \RfSmoteThreshold{} for the forest (Table~\ref{tab:holdout-thresholds}). These values are not common risk cutoffs: model probability scales differ, particularly across weighting and SMOTE. The validation set has \ValidationFraudCount{} frauds, so its threshold estimates can be sensitive to a small number of cases. At the precision-constrained validation operating point, XGBoost's threshold is \XgbWeightsStrictThreshold{} and its holdout recall is \XgbWeightsRecallAtStrictThreshold{}; this is a separate operating point from the F1 threshold.
 
-Figure~\ref{fig:thresholds} plots validation F1 over threshold and marks the selected operating regions. The curves show why threshold values should be interpreted within each model's score scale rather than compared as though the numerical thresholds were calibrated to the same risk.
+Fig.~\ref{fig:thresholds} plots validation F1 over threshold and marks the selected operating regions. The curves show why threshold values should be interpreted within each model's score scale rather than compared as though the numerical thresholds were calibrated to the same risk.
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/f10_validation_thresholds.pdf}
@@ -242,7 +242,7 @@ Figure~\ref{fig:thresholds} plots validation F1 over threshold and marks the sel
 \subsection{D. Protocol ablation}
 The development-only ablation shows an A0-to-A3 mean F1 change of \RFAblationDrop{} for the forest and \XGBAblationDrop{} for XGBoost (Table~\ref{tab:ablation}). The stage means and seed spread are reported in the generated table and Fig.~\ref{fig:ablation}. A0 is legacy-like but is not an exact reproduction of the old report's fixed-threshold evaluation: it uses the deduplicated development data and selects a threshold on its own evaluation partition. A3 also uses development data only and is not comparable to the locked holdout table.
 
-Figure~\ref{fig:ablation} displays the bundled protocol stages over the development seeds. The larger XGBoost change cannot be assigned to scaling leakage, threshold selection, or chronology individually because the stages change several elements together.
+Fig.~\ref{fig:ablation} displays the bundled protocol stages over the development seeds. The larger XGBoost change cannot be assigned to scaling leakage, threshold selection, or chronology individually because the stages change several elements together.
 \begin{table}[!t]
 \centering
 \caption{Protocol-specific development ablation across the saved seeds; stages bundle multiple changes.}
@@ -274,7 +274,7 @@ The validation false negatives have median amount \FNMedianAmount{} and median e
 \input{generated/tables/error_profile.tex}
 \end{table}
 
-Figure~\ref{fig:explainability} shows which features drive the selected model's scores and how many validation fraud cases were missed or caught. The visualization cannot attach semantic or operational meaning to anonymized PCA coordinates, and the error counts are not a substitute for case-level score analysis.
+Fig.~\ref{fig:explainability} shows which features drive the selected model's scores and how many validation fraud cases were missed or caught. The visualization cannot attach semantic or operational meaning to anonymized PCA coordinates, and the error counts are not a substitute for case-level score analysis.
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/f14_explainability_errors.pdf}
@@ -287,7 +287,7 @@ For the saved out-of-fold logistic-regression calibration curves, the mean absol
 
 The bounded tuning results are in Table~\ref{tab:tuning}. Tuned CV AP is \XgbTunedCVAP{} for XGBoost and \CatboostTunedCVAP{} for CatBoost, below their corresponding default CV means; validation AP is \XgbTunedValidationAP{} and \CatboostTunedValidationAP{}, respectively. This bounded search did not improve the saved CV comparison and did not replace the previously locked holdout choice; tuned configurations were not evaluated on the test partition.
 
-Figure~\ref{fig:calibration-cost} places the out-of-fold reliability curves beside the illustrative sensitivity curve. The calibration curves show similar average bin gaps, while the cost curve changes linearly with an assumed review expense and cannot establish real-world net savings.
+Fig.~\ref{fig:calibration-cost} places the out-of-fold reliability curves beside the illustrative sensitivity curve. The calibration curves show similar average bin gaps, while the cost curve changes linearly with an assumed review expense and cannot establish real-world net savings.
 \begin{table}[!t]
 \centering
 \caption{Bounded training-CV tuning and validation-only recheck.}

@@ -171,6 +171,9 @@ def main() -> None:
                         rf"${row.mean:.3f} \pm {row.std:.3f}$", fmt(row.mean_fit_seconds)])
     write_table("cv_metrics.tex", ["Model", "Strategy", "AP (mean $\pm$ SD)", "Fit (s)"], cv_rows)
     cv_sorted = cv.sort_values("mean", ascending=False)
+    for strategy, macro in (("weights", "LRWeightsCVAP"), ("smote", "LRSmoteCVAP")):
+        row = cv[(cv.model == "lr") & (cv.strategy == strategy)].iloc[0]
+        macros[macro] = fmt(float(row["mean"]))
     cv_folds = pd.read_csv(RESULTS / "cv_results.csv")
     fold_count = int(cv_folds.groupby(["model", "strategy"]).fold.nunique().min())
     one_se_cutoff = float(cv_sorted.iloc[0]["mean"] - cv_sorted.iloc[0]["std"] / np.sqrt(fold_count))
