@@ -1,0 +1,20 @@
+\begin{tabular}{llp{0.61\columnwidth}}
+\toprule
+Model & Strategy & Saved model settings \\
+\midrule
+catboost & SMOTE & iterations=500, depth=6, learning\_rate=0.05, task\_type=CPU \\
+catboost & undersampling & iterations=500, depth=6, learning\_rate=0.05, task\_type=CPU \\
+catboost & class weights & iterations=500, depth=6, learning\_rate=0.05, task\_type=CPU \\
+knn & none & n\_neighbors=25, weights=distance \\
+knn & undersampling & n\_neighbors=25, weights=distance \\
+lr & SMOTE & C=1, max\_iter=2000 \\
+lr & undersampling & C=1, max\_iter=2000 \\
+lr & class weights & C=1, max\_iter=2000 \\
+rf & SMOTE & n\_estimators=300, min\_samples\_leaf=2 \\
+rf & undersampling & n\_estimators=300, min\_samples\_leaf=2 \\
+rf & class weights & n\_estimators=300, min\_samples\_leaf=2 \\
+xgb & SMOTE & n\_estimators=300, learning\_rate=0.05, max\_depth=6, tree\_method=hist \\
+xgb & undersampling & n\_estimators=300, learning\_rate=0.05, max\_depth=6, tree\_method=hist \\
+xgb & class weights & n\_estimators=300, learning\_rate=0.05, max\_depth=6, tree\_method=hist \\
+\bottomrule
+\end{tabular}

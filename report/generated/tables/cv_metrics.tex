@@ -1,0 +1,20 @@
+\begin{tabular}{lrrr}
+\toprule
+Model & Strategy & AP (mean $\pm$ SD) & Fit (s) \\
+\midrule
+catboost & smote & $0.856 \pm 0.049$ & 20.071 \\
+catboost & undersample & $0.660 \pm 0.075$ & 2.631 \\
+catboost & weights & $0.868 \pm 0.050$ & 12.219 \\
+knn & none & $0.824 \pm 0.039$ & 0.131 \\
+knn & undersample & $0.707 \pm 0.074$ & 0.162 \\
+lr & smote & $0.720 \pm 0.061$ & 0.964 \\
+lr & undersample & $0.617 \pm 0.074$ & 0.105 \\
+lr & weights & $0.711 \pm 0.072$ & 0.288 \\
+rf & smote & $0.867 \pm 0.050$ & 104.178 \\
+rf & undersample & $0.719 \pm 0.055$ & 0.583 \\
+rf & weights & $0.858 \pm 0.048$ & 32.652 \\
+xgb & smote & $0.861 \pm 0.055$ & 8.491 \\
+xgb & undersample & $0.735 \pm 0.084$ & 0.303 \\
+xgb & weights & $0.872 \pm 0.052$ & 4.973 \\
+\bottomrule
+\end{tabular}

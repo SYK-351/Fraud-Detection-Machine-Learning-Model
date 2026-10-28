@@ -1,7 +1,7 @@
 # PROGRESS
 ## Status (edit in place)
 - Current: Complete (S0.4 deferred; extraction limitation documented) | TEST_EVALUATED: yes (one evaluation)
-- Tokens used (user-reported at last gate): n/a (local Luna; no Radox gateway) | Last commit: b5df9e3 docs: complete results report and assets
+- Tokens used (user-reported at last gate): n/a (local Luna; no Radox gateway) | Last commit: 0edc5a1 chore: ignore training artifacts, verify hooks
 ## Log (append only, newest last)
 ### 2026-10-27 S0 setup in progress
 - What: Read project brief and report digest; requested and received S0.1 decisions. Files: PROJECT_BRIEF.md, REPORT_DIGEST.md.
@@ -147,3 +147,21 @@
 - Result: `.gitignore` already lists `catboost_info/`; working artifacts remain on disk and are now ignored.
 - Checks: `git rm -r --cached catboost_info`; `pytest -q` passed (7 tests).
 - Decisions/deviations: No `.gitignore` edit was needed because the required pattern already existed.
+
+### 2026-10-28 R1.1 DONE
+- What: Extended result-driven export with split, hyperparameter, CV, holdout, hypothesis, feature-rank, and error-profile tables plus prose macros. Files: scripts/export_report_assets.py, report/generated/.
+- Result: 14 CV pairs and all three chronological split summaries exported from results/.
+- Checks: Export script completed; `scripts/check_tex.py` passed.
+- Decisions/deviations: Hyperparameters use the saved model settings in config_snapshot.json; task choices were not changed.
+
+### 2026-10-28 R1.2 DONE
+- What: Computed all three paired AP differences from saved holdout labels and probabilities. Files: results/final_pairwise.json.
+- Result: 1,000 stratified paired bootstrap replicates per pair, seed 42; XGB-minus-CatBoost interval matches the existing saved top-two interval exactly.
+- Checks: Confirmed all three prediction vectors have 56,746 rows and pairwise output records test predictions as descriptive-only, not selection input.
+- Decisions/deviations: No fitting, thresholding, or model selection was performed.
+
+### 2026-10-28 R1.3 DONE
+- What: Logged that the pairwise analysis reuses saved test predictions for descriptive intervals only. Files: PROGRESS.md.
+- Result: Test evaluation count remains the saved S4 count; post-hoc intervals are not used for choices.
+- Checks: `pytest -q` passed (7 tests); `scripts/check_tex.py` passed.
+- Decisions/deviations: None.

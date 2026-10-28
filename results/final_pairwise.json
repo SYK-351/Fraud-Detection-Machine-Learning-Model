@@ -1,0 +1,55 @@
+{
+  "description": "Post-hoc paired stratified-bootstrap AP differences from saved holdout predictions; descriptive intervals only.",
+  "test_predictions_source": "results/test_probabilities.npz",
+  "test_rows": 56746,
+  "test_frauds": 74,
+  "bootstrap_replicates": 1000,
+  "seed": 42,
+  "pairs": [
+    {
+      "left_model": "xgb_weights",
+      "right_model": "catboost_weights",
+      "left_selection_basis": "train-only cross-validation; locked before holdout",
+      "right_selection_basis": "train-only cross-validation; locked before holdout",
+      "difference_left_minus_right_ap": 0.011219064014824864,
+      "ci95_stratified_bootstrap": [
+        -0.0037178751199590547,
+        0.02784973245641218
+      ],
+      "bootstrap_replicates": 1000,
+      "seed": 42,
+      "post_hoc_descriptive_only": true,
+      "used_for_model_or_threshold_selection": false
+    },
+    {
+      "left_model": "xgb_weights",
+      "right_model": "rf_smote",
+      "left_selection_basis": "train-only cross-validation; locked before holdout",
+      "right_selection_basis": "train-only cross-validation; locked before holdout",
+      "difference_left_minus_right_ap": -0.01719197419592111,
+      "ci95_stratified_bootstrap": [
+        -0.04004150414171984,
+        0.0025658700210476203
+      ],
+      "bootstrap_replicates": 1000,
+      "seed": 42,
+      "post_hoc_descriptive_only": true,
+      "used_for_model_or_threshold_selection": false
+    },
+    {
+      "left_model": "catboost_weights",
+      "right_model": "rf_smote",
+      "left_selection_basis": "train-only cross-validation; locked before holdout",
+      "right_selection_basis": "train-only cross-validation; locked before holdout",
+      "difference_left_minus_right_ap": -0.028411038210745976,
+      "ci95_stratified_bootstrap": [
+        -0.0512780567463509,
+        -0.007893513129498689
+      ],
+      "bootstrap_replicates": 1000,
+      "seed": 42,
+      "post_hoc_descriptive_only": true,
+      "used_for_model_or_threshold_selection": false
+    }
+  ]
+}
