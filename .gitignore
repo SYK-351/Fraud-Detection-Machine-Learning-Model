@@ -26,3 +26,51 @@ __pycache__/
 *.toc
 
 .jupyter_data/
+
+# Local test/build outputs
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+*.egg-info/
+
+# Local IDE and operating-system metadata
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary AI handoff/specification files (keep durable project docs tracked)
+HANDOFF_FOR_CLAUDE.md
+REPORT_REWRITE_BRIEF.md
+
+# Additional LaTeX build artifacts (keep report sources and deliverables)
+*.run.xml
+*.bcf
+*.synctex(busy)
+*.nav
+*.snm
+*.vrb
+*.lof
+*.lot
+*.idx
+*.ind
+*.ilg
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.ist
+*.xdy
+*.auxlock
+*.idv
+*.lg
+*.4ct
+*.4tc
+*.tmp
+report/main.pdf
+report/main.xdv
