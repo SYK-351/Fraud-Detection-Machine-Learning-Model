@@ -7,10 +7,13 @@ from __future__ import annotations
 
 import itertools
 import json
+import platform
 import re
 import shutil
+import sys
 import zipfile
 from pathlib import Path
+from importlib.metadata import PackageNotFoundError, version
 
 import numpy as np
 import pandas as pd
@@ -111,6 +114,21 @@ def main() -> None:
     config = json.loads((RESULTS / "config_snapshot.json").read_text(encoding="utf-8"))
     final = json.loads((RESULTS / "final_metrics.json").read_text(encoding="utf-8"))
     cv = pd.read_csv(RESULTS / "cv_summary.csv")
+    package_names = {"Python": None, "NumPy": "numpy", "pandas": "pandas", "SciPy": "scipy",
+                     "scikit-learn": "scikit-learn", "imbalanced-learn": "imbalanced-learn",
+                     "XGBoost": "xgboost", "CatBoost": "catboost", "Matplotlib": "matplotlib",
+                     "SHAP": "shap"}
+    software = {"Python": sys.version.split()[0], "platform": platform.platform()}
+    for label, package in package_names.items():
+        if package is None:
+            continue
+        try:
+            software[label] = version(package)
+        except PackageNotFoundError:
+            software[label] = "not installed in report-build environment"
+    (RESULTS / "software_versions.json").write_text(json.dumps(software, indent=2) + "\n", encoding="utf-8")
+    write_table("software_versions.tex", ["Component", "Version in report-build environment"],
+                [[tex(name), tex(ver)] for name, ver in software.items()])
     pair_path = RESULTS / "final_pairwise.json"
     if pair_path.exists():
         pair_results = json.loads(pair_path.read_text(encoding="utf-8"))
@@ -123,7 +141,16 @@ def main() -> None:
     macros: dict[str, str | int] = {
         "DataRows": audit["rows_after_deduplication"],
         "FraudCount": audit["frauds_after_deduplication"],
+        "RawRows": audit["rows_before_deduplication"],
+        "TimeSpanHours": fmt(audit["time_span_hours"]),
+        "ModelFamilyCount": len(config["models"]) + 1,
+        "StrategyCount": len({str(x) for x in cv.strategy if str(x) != "none"}),
+        "CVPairCount": len(cv),
     }
+    macros["BootstrapReplicates"] = int(pair_results["bootstrap_replicates"])
+    macros["SeedValue"] = int(config["seed"])
+    ci_field = next(key for key in pair_results["pairs"][0] if key.startswith("ci") and key.endswith("_stratified_bootstrap"))
+    macros["ConfidenceLevel"] = int(ci_field.removeprefix("ci").split("_", 1)[0])
     for display, key, macro in (("Train", "train", "Train"),
                                 ("Validation", "validation", "Validation"),
                                 ("Test", "test", "Test")):
@@ -144,11 +171,24 @@ def main() -> None:
                         rf"${row.mean:.3f} \pm {row.std:.3f}$", fmt(row.mean_fit_seconds)])
     write_table("cv_metrics.tex", ["Model", "Strategy", "AP (mean $\pm$ SD)", "Fit (s)"], cv_rows)
     cv_sorted = cv.sort_values("mean", ascending=False)
+    cv_folds = pd.read_csv(RESULTS / "cv_results.csv")
+    fold_count = int(cv_folds.groupby(["model", "strategy"]).fold.nunique().min())
+    one_se_cutoff = float(cv_sorted.iloc[0]["mean"] - cv_sorted.iloc[0]["std"] / np.sqrt(fold_count))
     macros["CVBestMean"] = fmt(float(cv_sorted.iloc[0]["mean"]), 3)
     macros["CVBestSD"] = fmt(float(cv_sorted.iloc[0]["std"]), 3)
     macros["CVSecondMean"] = fmt(float(cv_sorted.iloc[1]["mean"]), 3)
     macros["CVBestModel"] = tex(f'{cv_sorted.iloc[0].model}/{cv_sorted.iloc[0].strategy}')
     macros["CVFastestTopCandidateSeconds"] = fmt(float(cv.sort_values("mean_fit_seconds").iloc[0].mean_fit_seconds), 3)
+    macros["CVFoldCount"] = fold_count
+    macros["CVOneSECutoff"] = fmt(one_se_cutoff)
+    macros["CVTopThreeWithinOneSE"] = "yes" if bool((cv_sorted.head(3)["mean"] >= one_se_cutoff).all()) else "no"
+    for row in cv.itertuples(index=False):
+        tag = row.model.title() + row.strategy.title()
+        macros[tag + "CVAP"] = fmt(float(row.mean))
+        macros[tag + "CVSD"] = fmt(float(row.std))
+        macros[tag + "MeanFitSeconds"] = fmt(float(row.mean_fit_seconds))
+    for strategy, group in cv.groupby("strategy"):
+        macros[str(strategy).title() + "StrategyMeanAP"] = fmt(float(group["mean"].mean()))
 
     # Per-model hyperparameters come only from the saved configuration snapshot.
     model_settings = config["models"]
@@ -158,7 +198,7 @@ def main() -> None:
         settings = model_settings.get(row.model, {})
         hp_rows.append([tex(row.model), tex(strategy_labels.get(row.strategy, row.strategy)),
                         tex(", ".join(f"{key}={value}" for key, value in settings.items()) or "default")])
-    write_table("hyperparameters.tex", ["Model", "Strategy", "Saved model settings"], hp_rows, "llp{0.61\\columnwidth}")
+    write_table("hyperparameters.tex", ["Model", "Strategy", "Saved model settings"], hp_rows, "llp{0.54\\textwidth}")
 
     # Two compact holdout tables, with confusion-count columns from the saved JSON.
     ranking_rows, threshold_rows = [], []
@@ -179,7 +219,7 @@ def main() -> None:
 
     # Hypothesis scorecard, preserving the evidence text from the logged result file.
     write_table("hypotheses.tex", ["Model/strategy", "Hypothesis", "Observed evidence", "Verdict"],
-                hypothesis_rows(RESULTS / "hypotheses.md"), "p{0.14\\columnwidth}p{0.22\\columnwidth}p{0.46\\columnwidth}p{0.12\\columnwidth}")
+                hypothesis_rows(RESULTS / "hypotheses.md"), "p{0.13\\textwidth}p{0.22\\textwidth}p{0.49\\textwidth}p{0.12\\textwidth}")
 
     # Feature table: top ten by SHAP, unioned with top ten by permutation importance.
     shap = pd.read_csv(RESULTS / "shap_importance.csv").sort_values("mean_absolute_shap_or_proxy", ascending=False)
@@ -203,6 +243,7 @@ def main() -> None:
     perm_top = set(perm.head(10).feature)
     macros["SHAPPermTopTenOverlap"] = len(shap_top & perm_top)
     macros["SHAPEDATopTenCliffOverlap"] = len(shap_top & set(eda.nsmallest(10, "cliff_rank").feature))
+    macros["ImportanceTopTenOverlap"] = len(shap_top & perm_top)
 
     # Error profile table and derived prose macros.
     profile = pd.read_csv(RESULTS / "validation_error_profile.csv").set_index("group")
@@ -235,6 +276,17 @@ def main() -> None:
         key = f'{model["model"].title()}{model["strategy"].title()}'
         macros[key + "Threshold"] = fmt(model["threshold_f1_validation"])
         macros[key + "StrictThreshold"] = fmt(model["threshold_precision_90_validation"])
+        macros[key + "AP"] = fmt(model["pr_auc"])
+        macros[key + "ROCAUC"] = fmt(model["roc_auc"])
+        macros[key + "Precision"] = fmt(model["precision"])
+        macros[key + "Recall"] = fmt(model["recall"])
+        macros[key + "FOne"] = fmt(model["f1"])
+        macros[key + "MCC"] = fmt(model["mcc"])
+        tn, fp = model["confusion_matrix"][0]
+        fn, tp = model["confusion_matrix"][1]
+        macros[key + "TP"] = int(tp)
+        macros[key + "FP"] = int(fp)
+        macros[key + "FN"] = int(fn)
     for pair in pair_results["pairs"]:
         left = pair["left_model"].replace("_", "").title()
         right = pair["right_model"].replace("_", "").title()
@@ -242,14 +294,57 @@ def main() -> None:
         macros[tag + "Difference"] = fmt(pair["difference_left_minus_right_ap"])
         macros[tag + "Low"] = fmt(pair["ci95_stratified_bootstrap"][0])
         macros[tag + "High"] = fmt(pair["ci95_stratified_bootstrap"][1])
+        if pair["left_model"] == "xgb_weights" and pair["right_model"] == "catboost_weights":
+            macros["TopCVPairDifference"] = fmt(pair["difference_left_minus_right_ap"])
+            macros["TopCVPairLow"] = fmt(pair["ci95_stratified_bootstrap"][0])
+            macros["TopCVPairHigh"] = fmt(pair["ci95_stratified_bootstrap"][1])
+        if pair["left_model"] == "xgb_weights" and pair["right_model"] == "rf_smote":
+            macros["XGBRFPairDifference"] = fmt(pair["difference_left_minus_right_ap"])
+            macros["XGBRFPairLow"] = fmt(pair["ci95_stratified_bootstrap"][0])
+            macros["XGBRFPairHigh"] = fmt(pair["ci95_stratified_bootstrap"][1])
+        if pair["left_model"] == "catboost_weights" and pair["right_model"] == "rf_smote":
+            macros["CatRFPairDifference"] = fmt(pair["difference_left_minus_right_ap"])
+            macros["CatRFPairLow"] = fmt(pair["ci95_stratified_bootstrap"][0])
+            macros["CatRFPairHigh"] = fmt(pair["ci95_stratified_bootstrap"][1])
+    for model in final["models"]:
+        key = f'{model["model"]}/{model["strategy"]}'
+        cv_row = cv[(cv.model == model["model"]) & (cv.strategy == model["strategy"])].iloc[0]
+        tag = model["model"].title() + model["strategy"].title()
+        macros[tag + "CVToHoldoutAPDrop"] = fmt(float(cv_row["mean"]) - model["pr_auc"])
+        macros[tag + "StrictThreshold"] = fmt(float(model["threshold_precision_90_validation"]))
+        strict_recall = model["recall_at_validation_precision_90_threshold"]
+        macros[tag + "RecallAtStrictThreshold"] = fmt(float(strict_recall)) if strict_recall is not None else "unavailable"
+    calibration = pd.read_csv(RESULTS / "calibration_curve.csv")
+    for key, tag in (("lr_weights", "Weights"), ("lr_smote", "SMOTE")):
+        rows = calibration[calibration.model_strategy == key]
+        macros["Calibration" + tag + "MeanAbsBinGap"] = fmt(float((rows.mean_predicted - rows.observed_fraction).abs().mean()))
     cost = pd.read_csv(RESULTS / "cost_sensitivity.csv")
     macros["ReviewCostMin"] = fmt(float(cost.review_cost_per_alert.min()), 0)
     macros["ReviewCostMax"] = fmt(float(cost.review_cost_per_alert.max()), 0)
+    macros["ReviewAlerts"] = int(cost.alerts.iloc[0])
+    macros["IllustrativeNetAtMinCost"] = fmt(float(cost.iloc[0].illustrative_net_saving), 3)
+    macros["IllustrativeNetAtMaxCost"] = fmt(float(cost.iloc[-1].illustrative_net_saving), 3)
+    ablation = pd.read_csv(RESULTS / "ablation.csv")
+    macros["AblationSeedCount"] = int(ablation.seed.nunique())
+    for model, tag in (("rf", "RF"), ("xgb", "XGB")):
+        for stage, stage_tag in (("A0_legacy_like", "AZero"), ("A3_chronological", "AThree")):
+            vals = ablation[(ablation.model == model) & (ablation.stage == stage)].f1
+            macros[f"{tag}{stage_tag}MeanFOne"] = fmt(float(vals.mean()))
+            macros[f"{tag}{stage_tag}SDFOne"] = fmt(float(vals.std()))
+    val_frauds = audit["splits"]["validation"]["frauds"]
+    macros["ValidationFraudCount"] = int(val_frauds)
+    macros["TestFraudCount"] = int(audit["splits"]["test"]["frauds"])
+    macros["ValidationRows"] = int(audit["splits"]["validation"]["rows"])
+    macros["TestPrevalenceRatio"] = fmt((audit["splits"]["test"]["frauds"] / audit["splits"]["test"]["rows"]) /
+                                         (audit["splits"]["train"]["frauds"] / audit["splits"]["train"]["rows"]), 3)
+    macros["TopTenFeatureCount"] = len(top_features)
     tuning = json.loads((RESULTS / "tuning_results.json").read_text(encoding="utf-8"))
     for item in tuning:
         tag = item["model"].title()
         macros[tag + "TunedCVAP"] = fmt(item["best_cv_pr_auc"])
         macros[tag + "TunedValidationAP"] = fmt(item["validation_pr_auc"])
+    macros["CVTotalFitMinutes"] = fmt(float((cv.mean_fit_seconds * fold_count).sum() / 60))
+    macros["TimeSpanDays"] = fmt(float(audit["time_span_hours"] / 24), 2)
 
     # Keep compatibility with existing report macros, but define the primary
     # model explicitly from CV rather than using the test-AP ranking.

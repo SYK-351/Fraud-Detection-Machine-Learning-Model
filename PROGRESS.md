@@ -1,7 +1,7 @@
 # PROGRESS
 ## Status (edit in place)
 - Current: Complete (S0.4 deferred; extraction limitation documented) | TEST_EVALUATED: yes (one evaluation)
-- Tokens used (user-reported at last gate): n/a (local Luna; no Radox gateway) | Last commit: 56af023 feat: extend report export with tables and pairwise tests
+- Tokens used (user-reported at last gate): n/a (local Luna; no Radox gateway) | Last commit: 86a7237 feat: readable multi-panel figure layout
 ## Log (append only, newest last)
 ### 2026-10-27 S0 setup in progress
 - What: Read project brief and report digest; requested and received S0.1 decisions. Files: PROJECT_BRIEF.md, REPORT_DIGEST.md.
@@ -171,3 +171,9 @@
 - Result: Report target layout uses nine figures; two-panel components are sized for at least 7 pt text at specified print widths.
 - Checks: EDA source metrics/audit files remained unchanged; cached-result restyler fitted no models; `pytest -q` passed (7 tests), `scripts/check_tex.py` passed.
 - Decisions/deviations: F5 remains available but is optional for the paper; holdout plots were redrawn from saved probabilities/metrics only. Updated report ZIP.
+
+### 2026-10-28 R3 DONE
+- What: Rewrote the IEEEtran report as a full journal-style paper with the requested methods, tables, integrated figures, results, discussion, and three-part conclusion. Files: report/main.tex, scripts/export_report_assets.py, report/generated/.
+- Result: The 171-word abstract distinguishes the CV-selected primary model from holdout rankings; nine figures and twelve tables are included. Author affiliation and email use the details supplied by the author.
+- Checks: Result exporter regenerated 14 CV rows, 3 split rows, and 3 descriptive post-hoc pairs; abstract word count 171; figure/table counts 9/12. `scripts/check_tex.py` currently reports the two R11 and one R10 citations, scheduled for R4.
+- Decisions/deviations: Missing validation per-case scores are explicitly reported as unavailable; no model was rerun. Software versions describe the report-build environment because original per-run versions were not recorded.
