@@ -12,17 +12,17 @@ The complete five-fold CV, one chronological holdout evaluation, three-seed prot
 | xgb / weights | 0.8717 | 0.7952 |
 | catboost / weights | 0.8676 | 0.7840 |
 | rf / smote | 0.8667 | 0.8124 |
-| xgb / smote | 0.8606 | pending |
-| rf / weights | 0.8580 | pending |
-| catboost / smote | 0.8559 | pending |
-| knn / none | 0.8239 | pending |
-| xgb / undersample | 0.7351 | pending |
-| lr / smote | 0.7202 | pending |
-| rf / undersample | 0.7194 | pending |
-| lr / weights | 0.7107 | pending |
-| knn / undersample | 0.7070 | pending |
-| catboost / undersample | 0.6602 | pending |
-| lr / undersample | 0.6169 | pending |
+| xgb / smote | 0.8606 | not evaluated |
+| rf / weights | 0.8580 | not evaluated |
+| catboost / smote | 0.8559 | not evaluated |
+| knn / none | 0.8239 | not evaluated |
+| xgb / undersample | 0.7351 | not evaluated |
+| lr / smote | 0.7202 | not evaluated |
+| rf / undersample | 0.7194 | not evaluated |
+| lr / weights | 0.7107 | not evaluated |
+| knn / undersample | 0.7070 | not evaluated |
+| catboost / undersample | 0.6602 | not evaluated |
+| lr / undersample | 0.6169 | not evaluated |
 
 <!--RESULTS-END-->
 
