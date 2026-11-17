@@ -45,6 +45,10 @@ desktop.ini
 # Temporary AI handoff/specification files (keep durable project docs tracked)
 HANDOFF_FOR_CLAUDE.md
 REPORT_REWRITE_BRIEF.md
+CLAUDE.md
+PLAN.md
+PROGRESS.md
+REPORT_DIGEST.md
 
 # Additional LaTeX build artifacts (keep report sources and deliverables)
 *.run.xml
@@ -74,3 +78,5 @@ REPORT_REWRITE_BRIEF.md
 *.tmp
 report/main.pdf
 report/main.xdv
+
+other/
