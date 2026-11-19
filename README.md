@@ -7,22 +7,22 @@ A reproducible, leakage-aware refactor of the original credit-card fraud noteboo
 The complete five-fold CV, one chronological holdout evaluation, three-seed protocol ablation, validation explainability, calibration, review-cost sensitivity, and bounded tuning are saved under `results/`. CV selected XGBoost with class weights; it achieved holdout PR-AUC 0.7952 (95% stratified bootstrap CI 0.7058–0.8756). FAST metrics are development diagnostics and are not final results.
 
 <!--RESULTS-START-->
-| Model / strategy | CV mean PR-AUC | Holdout PR-AUC |
-|---|---:|---:|
-| xgb / weights | 0.8717 | 0.7952 |
-| catboost / weights | 0.8676 | 0.7840 |
-| rf / smote | 0.8667 | 0.8124 |
-| xgb / smote | 0.8606 | not evaluated |
-| rf / weights | 0.8580 | not evaluated |
-| catboost / smote | 0.8559 | not evaluated |
-| knn / none | 0.8239 | not evaluated |
-| xgb / undersample | 0.7351 | not evaluated |
-| lr / smote | 0.7202 | not evaluated |
-| rf / undersample | 0.7194 | not evaluated |
-| lr / weights | 0.7107 | not evaluated |
-| knn / undersample | 0.7070 | not evaluated |
-| catboost / undersample | 0.6602 | not evaluated |
-| lr / undersample | 0.6169 | not evaluated |
+| Model / strategy | CV mean PR-AUC |
+|---|---:|
+| xgb / weights | 0.8717 |
+| catboost / weights | 0.8676 | 
+| rf / smote | 0.8667 | 
+| xgb / smote | 0.8606 |
+| rf / weights | 0.8580 |
+| catboost / smote | 0.8559 |
+| knn / none | 0.8239 |
+| xgb / undersample | 0.7351 |
+| lr / smote | 0.7202 |
+| rf / undersample | 0.7194 |
+| lr / weights | 0.7107 |
+| knn / undersample | 0.7070 |
+| catboost / undersample | 0.6602 |
+| lr / undersample | 0.6169 |
 
 <!--RESULTS-END-->
 
